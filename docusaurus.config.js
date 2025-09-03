@@ -84,16 +84,16 @@ const config = {
         title: 'Sistemas Informáticos',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/si.png',
         },
         items: [
-          {
-            type: 'docSidebar',
-            sidebarId: 'tutorialSidebar',
-            position: 'left',
-            label: 'Tutorial',
-          },
-          {to: '/blog', label: 'Blog', position: 'left'},
+          //{
+           // type: 'docSidebar',
+           // sidebarId: 'tutorialSidebar',
+           // position: 'left',
+           // label: 'Hardware',
+         // },
+          {to: '/docs/category/hardware', label: 'Hardware', position: 'left'},
           {
             href: 'https://github.com/facebook/docusaurus',
             label: 'GitHub',
