@@ -1,0 +1,106 @@
+---
+sidebar_position: 7
+---
+import ReactPlayer from 'react-player'
+
+# VIDEOS
+
+### ¿Cómo funciona un PC y que hace cada pieza? ⚙️
+*En este video se explica y analiza como funciona un PC pieza por pieza*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/0zkX6nlpiSk?si=WfFnCuuHK1ndp7u9' />
+
+### Procesadores
+*Aquí se explica de forma resumida, cuáles son los principales procesadores INTEL CORE, AMD, y sus generaciones*
+
+<ReactPlayer playing={false} controls url='https://www.youtube.com/watch?v=VDkIRD_CA6s' />
+
+### Cómo funciona la memoria de la computadora - Kanawat Senanan
+*En muchos sentidos, nuestros recuerdos nos hacen quienes somos, nos ayudan a recordar nuestro pasado, aprender y retener
+habilidades y planificar para el futuro. Y para las computadoras, que a menudo actúan como extensiones de nosotros mismos,
+la memoria juega el mismo papel. Kanawat Senanan explica cómo funciona la memoria de la computadora.*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/Sq3OjI3tVIM?si=YK1h-ytYS18299H_' />
+
+### Diferencia entre un sistema de 32-BITS y uno de 64-BITS
+*En este video se muestra en detalles la diferencia entre un sistema de 32 bits y uno de 64 bits.*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/a4iJs-rJHLY?si=VdpkR1uDm6SveIaR' />
+
+### ¿Qué es el DUAL CHANNEL? Diferencia con QUAD CHANNEL
+*Aquí se explica de forma técnica, el funcionamiento dual en las memorias RAM*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/j7Jvys3ApOQ?si=55gJtZqVEeBNhQAs' />
+
+### Registros
+*Explicación de los registros de memoria en electrónica digital*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/Kaq59Z9Z7Us?si=NbGhLIybqGC2FU5A' />
+
+### 💉 PASTA TÉRMICA | Qué Tipos Existen, Cómo Aplicarla y TODA la INFORMACIÓN que Debes Saber
+*La importancia de la pasta térmica para la refrigeración de los componentes*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/BXDmsIsHhIM?si=RffRPp8U68bgkDAu' />
+
+Mejores Formas de Aplicar la Pasta Térmica en Tu Procesador
+
+<ReactPlayer playing={false} controls url='https://www.youtube.com/shorts/WcDu2vvgHBg' />
+
+### ¿Por qué se paso de 32 a 64 bits ? Y Procesadores de 128 bits
+*Explicación de porque pasamos de 32 bits a 64 bits, y respuesta a cuando pasaremos a procesadores de 128 bits*
+
+<ReactPlayer playing={false} vcontrols url='https://youtu.be/XFkGvWzbMgA?si=PmENu-I1sF5jsypD' />
+
+### Líneas PCIE CPU y CHIPSET
+*Qué son las líneas PCI Express? Cómo afecta al rendimiento? De cuantas líneas disponemos para configurar nuestro equipo?*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/3psOTJt8Sgg?si=id9Z60JhfznJ1Wtj' />
+
+### BIOS - CMOS - PILA (batería)
+*Cuando hablamos de ordenadores, probablemente salgan los nombres BIOS, CMOS, o pila de la BIOS. Pero, ¿sabes qué es o en qué consiste? En los siguientes vídeos te aclaramos estas cuestiones*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/EwGnn-xBUuI?si=lqVtWM7SxP2_A98N' />
+
+<ReactPlayer playing={false} controls url='https://youtu.be/Sf5QunkuU64?si=nW0Yoela0PCaFbqb' />
+
+### Fabricación de un procesador
+*Descubre COMO se HACE un MICROPROCESADOR de SILICIO. El asombroso proceso de producción de millones de microchips en una fábrica de semiconductores.*
+
+<ReactPlayer playing={false} controls url='https://www.youtube.com/watch?v=9SPMP5XolHA' />
+
+### Funcionamiento de un procesador
+*En este vídeo hablaremos sobre como funciona un procesador o CPU "por dentro". Empezaremos desde un transistor y los circuitos lógicos simples que podemos hacer con ellos (puertas AND, OR, NOT), aprenderemos a como sumar (sumadores) o guardar información (flip - flop) y terminaros construyendo un procesador simple para entender su funcionamiento. *
+
+<ReactPlayer playing={false} controls url='https://www.youtube.com/watch?v=-ZTekGoR8uQ' />
+
+### Memorias de un ordenador
+*¡Tenemos demasiadas memorias! Disco duro, RAM, caché, SSD, VRAM... ¿Cómo funciona la RAM? ¿Es mejor un SSD que un HDD? ¿Para que sirve la nueva memoria de Intel Optane? ¿Pero para que necesitamos tantas...? En este vídeo te explico por qué son necesarios tantos niveles de memorias y cómo el ser humano ha conseguido resolver uno de los cuellos de botella más importantes en el mundo de la computación.*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/IwUq0RiUank?si=fFdWgxfBWMVeT8GF' />
+
+### Funcionamiento GPU
+*Funcionamiento de las placas de video, para entender mas acerca de ellas y ver en que hay que fijarnos a la hora de comprar.*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/KWY3OVmPo1M?si=aOsg7Mbg3MjHgmqz' />
+
+### Resoluciones de pantalla 4K, FHD, QHD y UHD
+*Traemos una guía de las resoluciones de pantalla que hay y las abreviaturas que utilizamos a la hora de hablar de ellas. De esta manera, si alguna vez lees términos como que hay una resolución SD o UXGA, podrás saber exactamente a qué se refieren con cada una de estas y todas las demás que suelen utilizarse*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/Ja46tJ3-et4?si=oiP2BacwKpbn3E8P' />
+
+### Almacenamiento SSD | M.2, NVME, SATA
+*Hoy en día existe una mezcla de conceptos muy gorda con los SSD. Por un lado se confunden los formatos con la tecnología de comunicación. ¿Has visto frases como que un M.2 es más rápido que un SSD?*
+
+<ReactPlayer playing={false} controls url='https://youtu.be/fjbVzGCuzYM?si=UBqzsFPGI03c27iq' />
+
+### Qué es una RAID y como funcionan?
+*Breve explicación de que son las RAID y como funcionan.*
+
+<ReactPlayer playing={false} controls url='https://www.youtube.com/watch?v=d-q8BZ3qV1o' />
+
+
+### ¿Qué es el Kernel?
+*Breve explicación de que es el Kernel y cuál es su función.*
+
+<ReactPlayer playing={false} controls url='https://www.youtube.com/watch?v=DxiFVmdaqbo' />
+
