@@ -3,8 +3,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
+  title: 'ErciApps',
+  tagline: 'La informática en divertida',
   favicon: 'img/favicon.ico',
 
   future: { v4: true },
@@ -29,14 +29,14 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+        //  editUrl:
+        //    'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
         blog: {
           showReadingTime: true,
           feedOptions: { type: ['rss', 'atom'], xslt: true },
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+        //  editUrl:
+        //    'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -69,23 +69,26 @@ const config = {
     ({
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Sistemas Informáticos',
-        logo: { alt: 'My Site Logo', src: 'img/si.png' },
+        title: 'Erciapps',
+        logo: { alt: 'My Site Logo', src: 'img/si.png',href: 'https://erciapps.sytes.net',target: '_self', },
         items: [
+          { to: '/', label: 'Inicio', position: 'left' },
           { to: '/docs/category/hardware', label: 'Hardware', position: 'left' },
-          {
-            href: 'https://github.com/facebook/docusaurus',
-            label: 'GitHub',
-            position: 'right',
-          },
+          //{
+          //  href: 'https://github.com/facebook/docusaurus',
+          //  label: 'GitHub',
+          //  position: 'right',
+         // },
         ],
       },
       footer: {
         style: 'dark',
-        links: [
+        /*links: [
           {
             title: 'Docs',
-            items: [{ label: 'Tutorial', to: '/docs/intro' }],
+            items: [{ label: 'Tutorial', to: '/docs/intro' },
+              { label: 'Inicio', to: 'https://ddi-docu.sytes.net' }
+            ],
           },
           {
             title: 'Community',
@@ -102,8 +105,8 @@ const config = {
               { label: 'GitHub', href: 'https://github.com/facebook/docusaurus' },
             ],
           },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        ],*/
+        copyright: `Copyright © ${new Date().getFullYear()} ErciApps`,
       },
       prism: {
         theme: prismThemes.github,
