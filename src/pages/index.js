@@ -149,6 +149,7 @@ export default function Home() {
         </section>
 
         {/* CTA final 
+
         <section style={{ maxWidth: 1100, margin: '0 auto 56px', padding: '0 16px' }}>
           <div style={{
             borderRadius: 18, padding: 20,

@@ -69,8 +69,8 @@ const config = {
     ({
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
-        title: 'Erciapps',
-        logo: { alt: 'My Site Logo', src: 'img/si.png',href: 'https://erciapps.sytes.net',target: '_self', },
+        title: 'Sistemas Informáticos',
+        logo: { alt: 'My Site Logo', src: 'img/si.png' },
         items: [
           { to: '/', label: 'Inicio', position: 'left' },
           { to: '/docs/category/hardware', label: 'Hardware', position: 'left' },
