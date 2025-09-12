@@ -142,10 +142,6 @@ export default function Home() {
           
 
 
-
-
-
-
         </section>
 
         {/* CTA final 
