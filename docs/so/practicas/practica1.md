@@ -1,0 +1,182 @@
+---
+sidebar_position: 1
+---
+
+# Práctica 1 
+
+Guía de desarrollo de la práctica: Instalación de sistemas operativos en entorno virtual
+
+## 1. Introducción
+
+En esta práctica vas a realizar la instalación de dos sistemas operativos en máquinas virtuales creadas con VMware Workstation:
+- **Windows 10 o Windows 11** (sistema propietario)
+- **Lubuntu 24.04** (sistema libre)
+
+Además, deberás realizar una comparativa técnica previa y documentar todo el proceso mediante capturas de pantalla y comentarios explicativos.  
+El trabajo se entregará en un documento **Word** exportado posteriormente a **PDF**.
+
+---
+
+## 2. Objetivos
+
+- Analizar y comparar las características de diferentes sistemas operativos.  
+- Instalar y configurar sistemas operativos libres y propietarios en entornos virtuales.  
+- Instalar y probar aplicaciones en ambos sistemas.  
+- Aplicar buenas prácticas de documentación técnica.  
+
+---
+
+## 3. Material necesario
+
+- Ordenador con **VMware Workstation** instalado.  
+- Imágenes ISO de:
+  - Windows 10 o Windows 11.
+  - Lubuntu 24.04 (descarga desde https://lubuntu.me/downloads/).  
+- Espacio libre en disco (mínimo 60 GB recomendados).  
+- Conexión a Internet para actualizaciones.  
+
+---
+
+## 4. Desarrollo de la práctica
+
+### 4.1 Comparativa inicial
+
+Antes de comenzar la instalación, completa la siguiente tabla comparativa entre **Windows 10/11** y **Lubuntu 24.04**.  
+Puedes consultar la documentación oficial o páginas técnicas fiables.
+
+| Aspecto | Windows 10/11 | Lubuntu 24.04 |
+|----------|----------------|----------------|
+| Requisitos mínimos |  |  |
+| Requisitos recomendados |  |  |
+| Tipo de licencia |  |  |
+| Campo de aplicación (usuarios, entornos) |  |  |
+| Arquitectura disponible |  |  |
+| Versión analizada |  |  |
+| Tamaño de instalación |  |  |
+
+Guarda esta tabla en tu memoria y añade una breve conclusión sobre las diferencias más destacables.
+
+---
+
+### 4.2 Instalación de Windows 10/11 en VMware
+
+1. **Crear la máquina virtual:**
+   - Abre VMware Workstation y selecciona **Create a New Virtual Machine**.
+   - Elige **Custom (advanced)** y configura:
+     - 2 CPU o más.
+     - 4 GB de RAM (mínimo).
+     - Disco duro de 40 GB.
+   - Asocia la imagen ISO de Windows 10/11 como medio de instalación.
+
+2. **Instalar Windows:**
+   - Inicia la máquina y sigue el asistente de instalación.
+   - Elige idioma, teclado y partición de disco.
+   - Crea un usuario local (no es necesario iniciar sesión en Microsoft).
+   - Espera a que finalice la instalación y llegue al escritorio.
+
+3. **Configurar y comprobar:**
+   - Instala **VMware Tools** desde el menú de VMware.
+   - Ajusta resolución y red.
+   - Instala una aplicación básica (por ejemplo, VLC o 7-Zip).
+   - Realiza las capturas siguientes:
+     - Configuración inicial.
+     - Pantalla de particionado.
+     - Escritorio final con aplicación abierta.
+
+4. **Documenta en tu memoria:**
+   - Breve descripción de cada fase.
+   - Comentarios sobre el rendimiento o incidencias.
+
+---
+
+### 4.3 Instalación de Lubuntu 24.04 en VMware
+
+:::warning ANTES DE EMPEZAR
+Necesario modificar archivo **.vmx** con los siguientes valores
+```
+firmware = "efi"
+efi.secureBoot.enabled = "FALSE"
+bios.bootDelay = "5000"
+```
+Estos valores hacen que la máquina sea UEFI.
+:::
+
+1. **Crear la máquina virtual:**
+   - Crea una nueva máquina con los siguientes parámetros:
+     - 1 CPU.
+     - 1 o 2 GB de RAM.
+     - 20 GB de disco.
+     - ISO de Lubuntu como medio de instalación.
+
+2. **Instalar Lubuntu:**
+   - Inicia la máquina y selecciona **Install Lubuntu**.
+   - Configura idioma, zona horaria y usuario.
+   - Acepta el particionado automático o elige “borrar disco e instalar”.
+   - Espera a que finalice la instalación y reinicia el sistema.
+
+3. **Configurar y actualizar:**
+   - Abre la terminal y ejecuta:
+     ```bash
+     sudo apt update && sudo apt upgrade
+     ```
+   - Instala una aplicación libre, por ejemplo:
+     ```bash
+     sudo apt install gimp
+     ```
+   - Comprueba su funcionamiento.
+
+4. **Capturas recomendadas:**
+   - Pantalla de instalación (paso de configuración).  
+   - Escritorio final.  
+   - Aplicación instalada y abierta.
+
+5. **Documenta en tu memoria:**
+   - Pasos realizados.  
+   - Diferencias observadas respecto a la instalación de Windows.  
+   - Incidencias o dificultades.  
+
+---
+
+### 4.4 Comparativa final y conclusiones
+
+### 4.4 Comparativa final y reflexión personal
+
+En la última parte de tu memoria, incluye una **reflexión técnica y personal** respondiendo de forma razonada a las siguientes cuestiones:
+
+1. **Diferencias en la instalación:**  
+   ¿Qué diferencias principales has encontrado entre el proceso de instalación de Windows y el de Lubuntu?  
+   Considera aspectos como velocidad, claridad de los menús, detección de hardware o facilidad de uso.
+
+2. **Estructura del disco y sistemas de archivos:**  
+   - Identifica en cada sistema operativo la **tabla de particionado** utilizada (por ejemplo, MBR o GPT) e inserta una **captura de pantalla** donde se observe.  
+   - Identifica también el **sistema de archivos** empleado (por ejemplo, NTFS en Windows o ext4 en Lubuntu) e incluye su captura correspondiente.  
+   - Explica brevemente las **principales diferencias** entre ambas tecnologías tanto en la tabla de particionado como en el sistema de archivos.
+
+3. **Facilidad de instalación:**  
+   ¿Qué sistema operativo te ha resultado más sencillo de instalar? Fundamenta tu respuesta indicando los motivos.
+
+4. **Ventajas e inconvenientes:**  
+   Señala las ventajas e inconvenientes más relevantes que has observado en cada sistema operativo.
+
+5. **Recomendación de uso:**  
+   Indica qué tipo de usuario o entorno consideras más adecuado para cada sistema operativo y justifica tu elección.
+
+---
+
+## 5. Entrega del trabajo
+
+1. Crea un documento **Word (.docx)** con todos los apartados anteriores.  
+2. Inserta las capturas de pantalla en su lugar correspondiente.  
+3. Exporta el documento a **PDF**.  
+4. Nómbralo de la siguiente forma:  
+`Apellidos_Nombre_Practica1_SO.pdf`
+5. Entrega el archivo en la plataforma indicada por el profesor.
+
+---
+
+## 6. Recomendaciones
+
+- Realiza capturas en los momentos clave.  
+- Asegúrate de guardar tus máquinas virtuales antes de cerrar VMware.  
+- Si algo falla, anota el error y cómo lo solucionaste.  
+- No borres las máquinas virtuales hasta haber entregado y revisado la práctica.

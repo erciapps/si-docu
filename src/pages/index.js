@@ -139,6 +139,21 @@ export default function Home() {
             </div>
           </article>
 
+          {/* SISTEMAS OPERATIVOS */}
+          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#fdba74')}>UT2</span>
+            <h3 style={title}>Sistemas operativos</h3>
+            <p style={desc}>
+              INSTALA SISTEMAS OPERATIVOS PLANIFICANDO EL PROCESO E INTERPRETANDO DOCUMENTACIÓN TÉCNICA
+            </p>
+            <div style={{ textAlign: 'center' }}>
+              <a href="/docs/category/sistemas-operativos" style={btn('#fb8c00')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
+          </article>
+
           
 
 
