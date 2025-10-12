@@ -1,5 +1,7 @@
 // @ts-check
-import {themes as prismThemes} from 'prism-react-renderer';
+import { themes as prismThemes } from 'prism-react-renderer';
+import autoprefixer from 'autoprefixer';
+import tailwindcss from '@tailwindcss/postcss';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -16,38 +18,25 @@ const config = {
   projectName: 'si-docu',
   trailingSlash: false,
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+      onBrokenMarkdownImages: 'warn',
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
 
-  presets: [
-    [
-      'classic',
-      ({
-        docs: {
-          sidebarPath: './sidebars.js',
-        //  editUrl:
-        //    'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        },
-        blog: {
-          showReadingTime: true,
-          feedOptions: { type: ['rss', 'atom'], xslt: true },
-        //  editUrl:
-        //    'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
-        theme: { customCss: './src/css/custom.css' },
-      }),
-    ],
-  ],
-
-  // 👉 Alias para que 'react-player' sea la versión lazy (no rompe SSR)
+  // 🔌 Plugins
   plugins: [
+    '@docusaurus/plugin-ideal-image',
+    'docusaurus-plugin-image-zoom',
+
+    // ⚙️ React Player (lazy)
     function aliasReactPlayer() {
       return {
         name: 'alias-react-player-lazy',
@@ -62,63 +51,101 @@ const config = {
         },
       };
     },
+
+    // 🎨 Tailwind + Autoprefixer
+    function tailwindPlugin() {
+      return {
+        name: 'docusaurus-tailwindcss',
+        configurePostCss(postcssOptions) {
+          postcssOptions.plugins.push(tailwindcss);
+          postcssOptions.plugins.push(autoprefixer);
+          return postcssOptions;
+        },
+      };
+    },
   ],
 
+  // ⚙️ Preset clásico + integración CSS personalizada
+  presets: [
+    [
+      'classic',
+      /** @type {import('@docusaurus/preset-classic').Options} */
+      ({
+        docs: {
+          sidebarPath: './sidebars.js',
+        },
+        blog: {
+          showReadingTime: true,
+          feedOptions: { type: ['rss', 'atom'], xslt: true },
+        },
+        theme: {
+          customCss: require.resolve('./src/css/custom.css'),
+        },
+      }),
+    ],
+  ],
+
+  // 🎨 Tema visual y comportamiento del sitio
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       image: 'img/docusaurus-social-card.jpg',
+
+      // 📚 Sidebar ajustado
+      docs: {
+        sidebar: {
+          hideable: false,
+          autoCollapseCategories: false,
+        },
+      },
+
+      // 🧭 Tabla de contenidos ajustada
+      tableOfContents: {
+        minHeadingLevel: 2,
+        maxHeadingLevel: 4,
+      },
+
       navbar: {
-        title: 'Sistemas Informáticos',
-        logo: { alt: 'My Site Logo', src: 'img/si.png' },
+        title: '',
+        logo: {
+          alt: 'ErciApps',
+          src: 'img/ercilogo.png',
+          target: '_self',
+          href: 'https://erciapps.sytes.net',
+          height: 40,
+          width: 40,
+        },
         items: [
           { to: '/', label: 'Inicio', position: 'left' },
           { to: '/docs/category/hardware', label: 'Hardware', position: 'left' },
-          //{
-          //  href: 'https://github.com/facebook/docusaurus',
-          //  label: 'GitHub',
-          //  position: 'right',
-         // },
+          { to: '/docs/category/sistemas-operativos', label: 'S.O', position: 'left' },
         ],
       },
+
       footer: {
         style: 'dark',
-        /*links: [
-          {
-            title: 'Docs',
-            items: [{ label: 'Tutorial', to: '/docs/intro' },
-              { label: 'Inicio', to: 'https://ddi-docu.sytes.net' }
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/docusaurus' },
-              { label: 'Discord', href: 'https://discordapp.com/invite/docusaurus' },
-              { label: 'X', href: 'https://x.com/docusaurus' },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              { label: 'Blog', to: '/blog' },
-              { label: 'GitHub', href: 'https://github.com/facebook/docusaurus' },
-            ],
-          },
-        ],*/
         copyright: `Copyright © ${new Date().getFullYear()} ErciApps`,
       },
+
       prism: {
         theme: prismThemes.github,
         darkTheme: prismThemes.dracula,
-        additionalLanguages: ['java','csharp','bash','json','python'],
+        additionalLanguages: ['java', 'csharp', 'bash', 'json', 'python'],
       },
+
       zoom: {
-        selector: '.markdown :not(em) > img',
-        background: { light: 'rgb(255, 255, 255)', dark: 'rgb(50, 50, 50)' },
-        config: { /* opciones medium-zoom si quieres */ },
+        selector: '.markdown img, .markdown picture img',
+        background: {
+          light: 'rgb(255, 255, 255)',
+          dark: 'rgb(50, 50, 50)',
+        },
       },
     }),
+
+  // 🖋️ Fuente moderna
+  stylesheets: [
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap',
+  ],
 };
 
 export default config;
