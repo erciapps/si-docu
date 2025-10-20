@@ -32,7 +32,7 @@ export default function TerminalBox({ command = "apt-get hire me" }) {
 
         {/* Línea de comando */}
         <div className="mt-2 flex">
-          <span className="text-green-400">ercipc:~$</span>
+          <span className="text-green-400">eapps:~$</span>
           <p className="flex-1 pl-3 typing text-white">{command}</p>
         </div>
       </div>

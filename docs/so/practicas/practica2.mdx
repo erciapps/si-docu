@@ -1,0 +1,199 @@
+---
+sidebar_position: 2
+---
+import EntregaCard from '@site/src/components/EntregaCard';
+import TerminalBox from "@site/src/components/TerminalBox";
+
+
+
+# Práctica 2
+
+## Identificadores de usuario
+| Usuario | Nombre |
+|----------|---------|
+| dam70 | Alejandro |
+| dam71 | Daniel |
+| dam72 | Diego |
+| dam73 | Francisco |
+| dam74 | Eva |
+| dam75 | Miguel D |
+| dam76 | David E |
+| dam77 | Mathías Joshua |
+| dam78 | Caua |
+| dam79 | Miguel M |
+| dam80 | Josué Mirko |
+| dam81 | Iker |
+| dam82 | Eros Ricardo |
+| dam83 | David P |
+| dam84 | Diego R |
+| dam85 | Samuel Esteban |
+| dam86 | Daniel S |
+| dam87 | Teodor |
+| dam88 | Juan Carlos |
+| dam89 | Óscar |
+| dam90 | Kevin Francisco |
+
+
+:::danger MUY IMPORTANTE ANTES DE EMPEZAR
+NO ELIMINAR MÁQUINAS VIRTUALES O DISCOS VIRTUALES EMPLEADOS DURANTE LA PRÁCTICA PARA POSTERIOR REVISIÓN
+REALIZAR CAPTURAS MÁS IMPORTANTES DEL PROCESO REALIZADO DURANTE LA PRÁCTICA
+**`id_dam` HACE SIEMPRE REFERENCIA A TU IDENTIFICADOR ASIGNADO**
+:::
+
+
+## 1. Introducción
+
+En esta práctica aprenderás a crear y gestionar un disco virtual (VHD) utilizando las herramientas incluidas en los sistemas operativos Windows y Linux. 
+Un archivo VHD (Virtual Hard Disk) simula un disco físico dentro del sistema, 
+permitiendo crear particiones, formatearlas y montar diferentes sistemas de archivos sin 
+alterar los discos reales del equipo.
+
+### Objetivo general
+Analizar el funcionamiento de una tabla de particiones GPT 
+mediante la creación de un disco virtual (VHD) de 200 MB, y comprobar la compatibilidad y el espacio ocupado por distintos sistemas de archivos en Windows y Linux.
+
+---
+
+
+### Crear un disco VHD en Windows (método gráfico)
+
+Esta sección explica cómo crear un disco virtual (VHD) de 200 MB utilizando las herramientas gráficas de Windows. 
+
+#### Pasos:
+
+1. **Abrir el Administrador de discos**
+   - Pulsa `Win + X` y selecciona **Administración de discos**.
+   - También puedes acceder escribiendo *diskmgmt.msc* en el cuadro de búsqueda o en la ventana de ejecución (`Win + R`).
+
+2. **Crear un nuevo disco virtual**
+   - En la barra de menú, selecciona **Acción → Crear VHD**.
+   - Elige una ubicación para guardar el archivo, por ejemplo:  
+     `C:\Users\Public\id_dam.vhd`
+   - Establece el **tamaño** en **200 MB**.
+   - En **formato de disco duro virtual**, selecciona **VHD** (no VHDX).
+   - Marca **Tamaño fijo** para que el archivo ocupe los 200 MB completos.
+   - Pulsa **Aceptar**.
+
+
+3. **Desmontar el disco cuando termines**
+   - Haz clic derecho sobre el nombre del disco virtual (a la izquierda del rectángulo azul).
+   - Selecciona **Desconectar VHD**.
+   - Confirma la operación. El archivo `id_dam.vhd` permanecerá en la ruta elegida y podrás volver a montarlo en cualquier momento.
+
+---
+
+### Crear un disco VHD en Ubuntu (Sólo para sistemas operativos **host** tipo Linux)
+
+Para crear un archivo VHD de 200 MB ejecuta el siguiente comando:
+
+<TerminalBox command="qemu-img create -f vpc ~/id_dam.vhd 200M" />
+
+Conectar el disco VHD como dispositivo de bloque virtual:
+
+<TerminalBox command="sudo modprobe nbd max_part=1" />
+
+<TerminalBox command="sudo qemu-nbd --connect=/dev/nbd0 ~/id_dam.vhd" />
+
+Abrir la herramienta de particionado:
+
+<TerminalBox command="sudo gparted /dev/nbd0" />
+
+Cuando finalices, desconecta el dispositivo:
+
+<TerminalBox command="sudo qemu-nbd --disconnect /dev/nbd0" />
+
+## Desarrollo de la práctica
+:::danger Importante
+Para realizar esta prática es necesario disponer de una máquina virtual con SO Windows, y otra máquina con SO Linux (cualquier distribución)
+:::
+
+### Particiones en Windows
+1. Monta la unidad creada en tu máquina virtual de **vmWare** (recuerda que la unidad debe de estar desmontada)
+2. Inicia la máquina de Windows.
+3. Abre el administrador de discos.
+4. Establece una tabla de particionado MBR.
+5. Crea las siguientes particiones: 
+   - Partición de 20mb con formato FAT32 con etiqueta de volumen: Identificador_iniciales_F32
+   - Partición de 100mb con formato NTFS
+
+Añade dentro de cada partición un archivo de texto con el nombre `documento_id_dam.txt` (**id_dam** es tu identificador) con la siguiente información:
+   - Identificador: tu identificador de usuario (id_dam)
+   - Práctica: 2
+   - Formato partición: Indica el formato
+   - Creado desde: Windows
+
+:::info Observaciones
+Observa el espacio ocupado por el propio formato de la partición.   
+Observa la letra asignada a cada partición en Windows.
+:::
+
+Desmonta la unidad y apaga **completamente** la máquina virtual.
+
+
+### Particiones en Ubuntu
+
+1. Monta el mismo archivo **VHD** en la máquina virtual con **Ubuntu**.  
+   Asegúrate de que el disco esté **desmontado en Windows** antes de añadirlo a la máquina Linux.
+
+2. Inicia la máquina virtual de Ubuntu y abre una terminal.
+
+3. Conecta el disco VHD al sistema como dispositivo de bloque utilizando **qemu-nbd**:
+
+<TerminalBox command="sudo modprobe nbd max_part=1" />
+<TerminalBox command="sudo qemu-nbd --connect=/dev/nbd0 ~/id_dam.vhd" />
+
+4. Abre la herramienta de particionado **GParted** (puedes usar también el comando):
+
+<TerminalBox command="sudo gparted /dev/nbd0" />
+
+5. Localiza el disco correspondiente (por ejemplo, **/dev/nbd0**), que ya contiene las particiones creadas en **Windows**.
+
+6. En el espacio **no asignado**, crea las siguientes particiones:
+
+   - **Partición de 50 MB** con formato **ext4**, etiqueta de volumen:  
+     `Identificador_iniciales_EXT4`
+
+   - **Partición de 30 MB** con formato **NTFS**, etiqueta de volumen:  
+     `Identificador_iniciales_NTFS`
+
+7. Pulsa en **Aplicar cambios** y espera a que **GParted** finalice el proceso de formateo.
+
+8. Crea dentro de cada partición un archivo de texto llamado `documento_id_dam.txt` con el siguiente contenido:
+   - Identificador: tu identificador de usuario (id_dam)
+   - Práctica: 2
+   - Formato partición: Indica el formato
+   - Creado desde: Linux
+
+9. Realiza (si es posible), una modificación sobre cada uno de los archivos creados en las particiones de Windows.
+
+:::info Observaciones
+Observa el espacio ocupado por el propio formato de la partición.   
+Observa la letra asignada a cada partición en Ubuntu (linux).
+Observa si fue posible ver y modificar el contenido de los archivos.
+:::
+
+## Comprobaciones finales
+Verifica si las particiones creadas en Linux sean visibles desde Windows cuando se vuelva a montar el VHD.   
+
+Comprueba cuáles de las particiones pueden abrirse, leerse y modificarse correctamente desde ambos sistemas.
+
+## Entrega del trabajo:
+   ### Documento
+   1. Crea un documento **Word (.docx)** con todos los apartados anteriores.  
+   Inserta las capturas de pantalla en su lugar correspondiente.  
+   Exporta el documento a **PDF**.  
+   Nómbralo de la siguiente forma: `Apellidos_Nombre_Practica2_SO.pdf`   
+
+   ### Archivo .vhd
+   2. Desmonta tu disco virtual de cualquier sistema para poder ser enviado a la tarea.   
+   En necesario disponer de las particiones y archivos indicados durante la práctica 
+   Sube ambos archivos en la entrega habilitada.  
+
+<EntregaCard
+  unidad="UT2 - Sistemas Operativos"
+  title="Práctica 2. Particiones desde Linux y Windows"
+  description="Necesario subir documento PDF y archivo id_dam.vhd"
+  date="24-10-2025"
+  time="23:30"
+  link="https://aulasciclos2526.castillalamancha.es/mod/assign/view.php?id=642544"
+/>
