@@ -144,12 +144,12 @@ Desmonta la unidad y apaga **completamente** la máquina virtual.
 
 3. Conecta el disco VHD al sistema como dispositivo de bloque utilizando **qemu-nbd**:
 
-<TerminalBox command="sudo modprobe nbd max_part=1" />
-<TerminalBox command="sudo qemu-nbd --connect=/dev/nbd0 ~/id_dam.vhd" />
 
-4. Abre la herramienta de particionado **GParted** (puedes usar también el comando):
+4. Instala **GParted**:
+<TerminalBox command="sudo apt install gparted" />
 
-<TerminalBox command="sudo gparted /dev/nbd0" />
+5. Abre la herramienta de particionado **GParted** (puedes usar también el comando):
+<TerminalBox command="sudo gparted" />
 
 5. Localiza el disco correspondiente (por ejemplo, **/dev/nbd0**), que ya contiene las particiones creadas en **Windows**.
 
