@@ -3,6 +3,7 @@ sidebar_position: 2
 ---
 import EntregaCard from '@site/src/components/EntregaCard';
 import TerminalBox from "@site/src/components/TerminalBox";
+import Image from '@theme/IdealImage';
 
 
 
@@ -113,13 +114,26 @@ Para realizar esta prática es necesario disponer de una máquina virtual con SO
 :::
 
 ### Particiones en Windows
+
+:::danger ANTES DE CONTINUAR
+En caso de haber encriptado el disco, será necesario desactivarlo. Para ello elimina el TPM:
+<figure>
+  <img src="/img/encryp1.png" alt="encryp1" width="400" />
+</figure>
+Y desactiva el cifrado:
+<figure>
+  <img src="/img/encryp2.png" alt="encryp2" width="400" />
+</figure>
+
+:::
+
 1. Monta la unidad creada en tu máquina virtual de **vmWare** (recuerda que la unidad debe de estar desmontada)
 2. Inicia la máquina de Windows.
 3. Abre el administrador de discos.
 4. Establece una tabla de particionado MBR.
 5. Crea las siguientes particiones: 
-   - Partición de 20mb con formato FAT32 con etiqueta de volumen: Identificador_iniciales_F32
-   - Partición de 100mb con formato NTFS
+   - Partición de 35mb con formato FAT32 con etiqueta de volumen: Identificador_iniciales_F32
+   - Partición de 65mb con formato NTFS
 
 Añade dentro de cada partición un archivo de texto con el nombre `documento_id_dam.txt` (**id_dam** es tu identificador) con la siguiente información:
    - Identificador: tu identificador de usuario (id_dam)
@@ -142,23 +156,20 @@ Desmonta la unidad y apaga **completamente** la máquina virtual.
 
 2. Inicia la máquina virtual de Ubuntu y abre una terminal.
 
-3. Conecta el disco VHD al sistema como dispositivo de bloque utilizando **qemu-nbd**:
-
-
-4. Instala **GParted**:
+4. Abre una terminal e instala **GParted**:
 <TerminalBox command="sudo apt install gparted" />
 
 5. Abre la herramienta de particionado **GParted** (puedes usar también el comando):
 <TerminalBox command="sudo gparted" />
 
-5. Localiza el disco correspondiente (por ejemplo, **/dev/nbd0**), que ya contiene las particiones creadas en **Windows**.
+5. Localiza el disco correspondiente (por ejemplo, **/dev/sdb**), que ya contiene las particiones creadas en **Windows**.
 
 6. En el espacio **no asignado**, crea las siguientes particiones:
 
    - **Partición de 50 MB** con formato **ext4**, etiqueta de volumen:  
      `Identificador_iniciales_EXT4`
 
-   - **Partición de 30 MB** con formato **NTFS**, etiqueta de volumen:  
+   - **Partición de 50 MB** con formato **NTFS**, etiqueta de volumen:  
      `Identificador_iniciales_NTFS`
 
 7. Pulsa en **Aplicar cambios** y espera a que **GParted** finalice el proceso de formateo.
