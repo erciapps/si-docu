@@ -1,0 +1,203 @@
+---
+sidebar_position: 5
+---
+import EntregaCard from '@site/src/components/EntregaCard';
+import TerminalBox from "@site/src/components/TerminalBox";
+import Image from '@theme/IdealImage';
+
+# Práctica 4 
+## PRÁCTICA POR GRUPOS (PARTE 1) PAREJAS (PARTE 2)
+
+## Introducción
+Esta práctica consiste en realizar una copia exacta (backup) y restauración (en VMWare) de nuestro sistema operativo instado en la práctica anterior en los 
+**EQUIPOS DE PRÁCTICAS**.   
+
+La copia y restauración se realizará desde un dispositivo de red. Para ello usarmos el programa `Clonezilla`.  
+  
+`Clonezilla` es una herramienta de software libre para clonar discos y particiones. 
+Permite realizar copias de seguridad completas (imágenes) o replicar un disco en otro, útil para:
+
+* **Respaldo de datos:** Crear imágenes de sistemas operativos y archivos.
+* **Migración:** Clonar un disco a otro (como cambiar un HDD por un SSD).
+* **Restauración rápida**: Recuperar sistemas en caso de fallos.
+* **Despliegue masivo:** Instalar sistemas idénticos en múltiples máquinas.
+Es ideal para técnicos y administradores que necesitan una solución eficiente y gratuita para manejar discos.
+
+## Instrucciones
+- Antes de su realización se explicará en clase la idea y conceptos teóricos básicos para su realización.   
+
+- Sigue todos los pasos propuestos de esta práctica.
+- En caso de tener algún problema durante el transcurso de la práctica, o de no disponer del material necesario para su realización, avisad
+lo antes posible al profesor para solucionar los problemas.
+- ### Será necesario realizar capturas de todos los pasos importantes durante el transcurso de esta práctica.
+-  La memoria entregada debe ser clara y organizada, y deberá responder a las preguntas propuestas.
+- ### La práctica es INDIVIDUAL.
+
+## PARTE 1 (PRÁCTICA POR GRUPOS)
+:::tip Información
+LA ACTIVIDAD SE REALIZARÁ EN LOS EQUIPOS HABILITADOS PARA LA PRÁCTICA, Y SERÁ GUIADA EN TODO MOMENTO
+:::
+:::warning
+NO ES NECESARIO DOCUMENTAR GRAFICAMENTE ESTE PROCESO 
+:::
+:::danger
+SE DEBE INCLUIR EN LA MEMORIA LAS CAPTURAS DE PANTALLA DE LA PRIMERA PARTE DE LA PRÁCTICA REALIZADA EN CLASE (RESTAURACIÓN FALLIDA)
+:::
+### PASO 1. Arrancar ISO desde la red (PXE)
+Arrancad la ISO del programa `clonezilla` desde red mediante PXE (IVentoy)   
+
+<figure>
+  <img src="/img/clonezilla/clonezilla1.png" alt="clonezilla1" width="400" />
+</figure>
+
+### PASO 2. Seleccionar modo de copia.
+Selecciona la opción **`device-image`** (crear un backup/copia en archivo/s)
+
+<figure>
+  <img src="/img/clonezilla/clonezilla5.png" alt="clonezilla1" width="400" />
+</figure>
+
+### PASO 3. Configurar dispositivo de destino y parámetros de conexión
+La copia se realizará en un dispositivo en red (NAS) . Para conectarnos existen diferentes protocolos, usaremos `ssh`
+<figure>
+  <img src="/img/clonezilla/sshclonezilla1.png" alt="clonezilla1" width="400" />
+</figure>
+
+Seleccionamos la configuración de nuestra tarjeta de red: `DHCP` (el servicio de asignación de IPs del router asigna una IP automaticamente a nuestro equipo)
+<figure>
+  <img src="/img/clonezilla/sshclonezilla2.png" alt="clonezilla2" width="400" />
+</figure>
+
+Indicamos la IP en la que se encuentra el NAS (dispositivo en red que nos permitirá almacenar la copia/backup).   
+- Para esta práctica es: `192.168.29.15`
+<figure>
+  <img src="/img/clonezilla/sshclonezilla3.png" alt="sshclonezilla3" width="400" />
+</figure>
+
+El puerto del servicio ssh (el que nos permite conectar de forma segura con el servidor NAS) es el `2022`
+<figure>
+  <img src="/img/clonezilla/sshclonezilla4.png" alt="sshclonezilla4" width="400" />
+</figure>
+
+Los usuarios creados son: **`g1user`**, **`g2user`**, **`g3user`**, **`g4user`**, **`g5user`**
+Selecciona el que corresponda a tu grupo.
+<figure>
+  <img src="/img/clonezilla/sshclonezilla5.png" alt="sshclonezilla5" width="400" />
+</figure>
+
+Debemos indicar una ubicación para almacenar el backup. Según el grupo: 
+* GRUPO1: `/srv/dev-sdb/backupsg1`
+* GRUPO2: `/srv/dev-sdb/backupsg2`
+* GRUPO3: `/srv/dev-sdb/backupsg3`
+* GRUPO4: `/srv/dev-sdb/backupsg4`
+* GRUPO5: `/srv/dev-sdb/backupsg5`
+<figure>
+  <img src="/img/clonezilla/sshclonezilla6.png" alt="sshclonezilla6" width="400" />
+</figure>
+
+Nos pedirá que indiquemos si confiamos en la conexión, por lo que tendremos que escribir `yes`. Depues nos pide la contraseña:
+* GRUPO1: `g1pass`
+* GRUPO2: `g2pass`
+* GRUPO3: `g3pass`
+* GRUPO4: `g4pass`
+* GRUPO5: `g5pass`
+
+<figure>
+  <img src="/img/clonezilla/sshclonezilla7.png" alt="sshclonezilla7" width="400" />
+</figure>
+
+### PASO 4. Realizar la copia
+Los siguientes pasos son genéricos para relizar una copia
+<figure>
+  <img src="/img/clonezilla/clonezilla17.png" alt="clonezilla17" width="400" />
+</figure>
+En este paso podemos indicar si realizar una copia de todo el dispositivo, es decir, todas las particiones o unicamente algunas de ellas.
+<figure>
+  <img src="/img/clonezilla/clonezilla18.png" alt="clonezilla18" width="400" />
+</figure>
+
+Indicar un nombre de la copia
+<figure>
+  <img src="/img/clonezilla/clonezilla19.png" alt="clonezilla19" width="400" />
+</figure>
+
+**Dispositivo de origen**
+<figure>
+  <img src="/img/clonezilla/clonezilla20.png" alt="clonezilla20" width="400" />
+</figure>
+Indicamos últimas configuraciones
+<figure>
+  <img src="/img/clonezilla/clonezilla21.png" alt="clonezilla21" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla22.png" alt="clonezilla22" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla23.png" alt="clonezilla23" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla24.png" alt="clonezilla24" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla25.png" alt="clonezilla25" width="400" />
+</figure>
+
+Se procede a realizar la copia. Seguir indicaciones de pantalla
+<figure>
+  <img src="/img/clonezilla/clonezilla26.png" alt="clonezilla26" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla27.png" alt="clonezilla27" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla28.png" alt="clonezilla28" width="400" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/clonezilla29.png" alt="clonezilla29" width="400" />
+</figure>
+El procedimiento queda completado.
+<figure>
+  <img src="/img/clonezilla/clonezilla30.png" alt="clonezilla30" width="400" />
+</figure>
+
+Finalmente la copia queda almacenada en el dispositivo y ruta configurados. Esta copia puede ser restaurada en otro nuevo dispositivo del mismo equipo,
+en uno o varios equipos de una red, etc.
+
+## PARTE 2 (PRÁCTICA POR PAREJAS)
+:::info ACTIVIDAD
+   
+* **IMPORTANTE:** Realiza capturas de pantalla, documenta y comenta los pasos más importantes realizados.
+* Restaura en una máquina virtual de **VMWare**, el backup de la máquina asignada a tu grupo.
+:::
+
+:::note CUESTIONES
+1. ¿Qué ventajas tiene almacenar la copia del sistema operativo en un **servidor NAS** en lugar de en un disco local?  
+2. ¿Qué información se incluye en el archivo de imagen generado por Clonezilla?  
+3. ¿En qué casos sería más útil una clonación que un backup, y viceversa?    
+4. ¿Por qué Clonezilla solicita escribir “yes” la primera vez que nos conectamos por SSH al NAS?  
+5. ¿Qué diferencia hay entre los **usuarios de grupo (g1user, g2user, etc.)**? ¿Qué función cumple cada uno en el proceso?  
+6. ¿Qué consecuencias podría tener guardar la copia de seguridad en una carpeta incorrecta dentro del NAS?  
+7. ¿Qué ocurriría si intentas restaurar una imagen creada en un disco de mayor tamaño sobre uno más pequeño?  
+8. ¿Cómo podrías usar Clonezilla para desplegar la misma imagen en varios equipos al mismo tiempo?  
+9. ¿Qué ventajas ofrece Clonezilla frente a otras herramientas de clonación comerciales?  
+10. ¿Qué medidas de seguridad adoptarías antes de realizar una clonación o restauración en un entorno real?  
+:::
+
+## Entrega del trabajo:
+:::danger Atención
+UNA ÚNICA ENTREGA POR PAREJA
+:::
+   ### Documento
+   1. Crea un documento **Word (.docx)** con todos los apartados anteriores.  
+   Inserta las capturas de pantalla en su lugar correspondiente.  
+   Exporta el documento a **PDF**.  
+   Nómbralo de la siguiente forma: `Apellidos_Nombre_Practica4_SO.pdf`   
+
+<EntregaCard
+  unidad="UT2 - Sistemas Operativos"
+  title="Práctica 4. Copias de seguridad en red con clonezilla"
+  description="Necesario subir documento PDF"
+  date=""
+  time=""
+  link="https://aulasciclos2526.castillalamancha.es"
+/>

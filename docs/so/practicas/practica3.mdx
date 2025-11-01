@@ -1,0 +1,125 @@
+---
+sidebar_position: 5
+---
+import EntregaCard from '@site/src/components/EntregaCard';
+import TerminalBox from "@site/src/components/TerminalBox";
+import Image from '@theme/IdealImage';
+
+# Práctica 3
+## PRÁCTICA INDIVIDUAL
+## Introducción
+En esta práctica aprenderás a realizar **copias y clonaciones de discos virtuales** utilizando una máquina virtual en **VMWare** y el entorno **WinPE** con herramientas de gestión de particiones y backups.  
+El objetivo es comprender la diferencia entre **clonación** y **copia de seguridad**, así como el proceso de **restauración** de una imagen de disco.  
+Durante el ejercicio trabajarás con distintos dispositivos virtuales, aplicando conceptos básicos de almacenamiento y verificación de integridad de datos.
+
+## Instrucciones
+- Antes de su realización se explicará en clase la idea y conceptos teóricos básicos para su realización.
+
+- Sigue todos los pasos propuestos de esta práctica, tomando especial atención a las imágenes facilitadas.
+- En caso de tener algún problema durante el transcurso de la práctica, o de no disponer del material necesario para su realización, avisad
+lo antes posible al profesor para solucionar los problemas.
+- ### Será necesario realizar capturas de todos los pasos importantes durante el transcurso de esta práctica.
+-  La memoria entregada debe ser clara y organizada, y deberá responder a las preguntas propuestas.
+- ### La práctica es INDIVIDUAL.
+
+## Pasos para su realización.
+Ten en cuenta que en algunos momentos durante el transcurso de la práctica, pueden faltar ciertas indicaciones que se da por hecho que el alumno/a controla, o que se dan por explicadas en la explicación previa en clase.
+### PASO 1.
+- Crea o reutiliza una máquina virtual en VMWare.
+- Montar la imagen (`.iso`) de WinPE que contiene todas las herramientas de manejo de disco.
+- Montar dispositivo de almacenamiento virtual (`.vhd`) creado en la anterior práctica (con esquema de particionado).
+- Crear otro dispositivo de almacenamiento nuevo desde el propio **VMWare**, de 250mb. (Ver siguientes imágenes)
+<figure>
+  <img src="/img/clonezilla/vmsettings2.png" alt="vmsettings2" width="300" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/vmsettings3.png" alt="vmsettings2" width="300" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/vmsettings4.png" alt="vmsettings2" width="300" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/vmsettings5.png" alt="vmsettings2" width="300" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/vmsettings6.png" alt="vmsettings2" width="300" />
+</figure>
+<figure>
+  <img src="/img/clonezilla/vmsettings7.png" alt="vmsettings2" width="300" />
+</figure>
+Finalmente debes tener 3 dispositivos: origen, destino, ISO con las herramientas
+<figure>
+  <img src="/img/clonezilla/vhd.png" alt="chd" width="300" />
+</figure>
+
+
+### PASO 2.
+:::danger MUY IMPORTANTE
+AJUSTAR EL SISTEMA OPERATIVO DE LA MÁQUINA A WINDOWS 10/11 PARA EL CORRECTO FUNCIONAMIENTO
+:::
+
+<figure>
+  <img src="/img/clonezilla/vmsettings.png" alt="vmsettings" width="300" />
+</figure>
+
+### PASO 3.
+Inicia la máquina y entra en el selector de arranque.
+- Es necesario hacer clic sobre el fondo de la máquina al iniciar, y posteriormete pulsar la tecla `ESC` **UNA ÚNICA VEZ**
+<figure>
+  <img src="/img/clonezilla/boot1.png" alt="boot1" width="300" />
+</figure>
+Según la configuración de tu máquina podrás ver un selector de arraque u otro.
+<figure>
+  <img src="/img/clonezilla/boot2.png" alt="boot2" width="300" />
+</figure>
+
+### PASO 4.
+Una vez iniciado WinPE, abre la herramienta de discos **EaseUS**
+<figure>
+  <img src="/img/clonezilla/easeus.png" alt="boot2" width="300" />
+</figure>
+
+:::info ACTIVIDADES
+1. Crea una **clonación** del dispositivo de origen en el dispositivo de destino. Comprueba que el disco destino tiene el mismo número de particiones que el origen.   
+
+2. Crea un backup del dispositivo de origen en el dispositivo de destino. Observa que crea un directorio con varios archivos.  
+
+3. Restaura el backup realizado en otro dispositivo de destino, y observa que se realiza la restauración de igual forma que si fuera una clonación de dispositivo a dispositivo.
+:::
+
+:::note CUESTIONES
+
+¿Cuál es la diferencia entre una clonación de disco y una copia de seguridad (backup)?
+
+¿Qué ventajas ofrece WinPE frente a realizar la clonación desde un sistema operativo en ejecución?
+
+¿Qué función cumple el archivo .vhd dentro de esta práctica?
+
+¿Por qué es importante ajustar el tipo de sistema operativo a Windows 10/11 antes de iniciar la máquina virtual?
+
+¿Qué diferencias hay entre montar un disco físico y un disco virtual en VMWare?
+
+Describe los tres dispositivos conectados a tu máquina virtual y su función en la práctica.
+
+¿Qué ocurre si intentas clonar un disco en otro de menor tamaño?
+
+Explica qué archivos genera EaseUS al crear un backup completo de disco.
+
+Tras restaurar un backup, ¿qué comprobaciones puedes hacer para asegurarte de que el proceso ha sido correcto?
+:::
+
+## Entrega del trabajo:
+   ### Documento
+   1. Crea un documento **Word (.docx)** con todos los apartados anteriores.  
+   Inserta las capturas de pantalla en su lugar correspondiente.  
+   Exporta el documento a **PDF**.  
+   Nómbralo de la siguiente forma: `Apellidos_Nombre_Practica4_SO.pdf`   
+
+<EntregaCard
+  unidad="UT2 - Sistemas Operativos"
+  title="Práctica 3. Clonaciones y copias de seguridad con EaseUS"
+  description="Necesario subir documento PDF"
+  date=""
+  time=""
+  link="https://aulasciclos2526.castillalamancha.es"
+/>
