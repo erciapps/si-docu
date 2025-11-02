@@ -1,0 +1,89 @@
+---
+sidebar_position: 1
+---
+
+# Clonación y respaldo de dispositivos
+
+Este capítulo explica los diferentes métodos de **copia y respaldo de sistemas de almacenamiento**, 
+desde la clonación directa hasta la realización de copias en red mediante herramientas de clonación y 
+servidores PXE.
+
+---
+
+## Clonación de dispositivos (Dispositivo a dispositivo)
+
+<figure>
+  <a href="/img/clonezilla/backups1.png">
+    <img src="/img/clonezilla/backups1.png" alt="backups1" width="400" />
+  </a>
+  <figcaption>Haz clic para ver la imagen ampliada en la misma pestaña</figcaption>
+</figure>
+
+
+
+
+La **clonación** realiza una copia exacta, bit a bit, del contenido de un disco origen a otro disco destino.  
+Se copian la **tabla de particiones (MBR o GPT)**, los **formatos de sistema de archivos** y los **tamaños de las particiones**.
+
+- Se necesita un **disco destino igual o mayor** que el origen.  
+- El proceso se ejecuta mediante una herramienta de clonación arrancada desde un **entorno ISO** o **dispositivo autoarrancable** (Ventoy, Rufus, PXE, etc.).  
+- Se utiliza en migraciones, sustitución de discos o replicación exacta de sistemas.
+
+**Ejemplos de herramientas:** Clonezilla, EaseUS, Acronis True Image.
+
+---
+
+## Backup de dispositivos (Dispositivo a imagen/archivo)
+
+<figure>
+  <a href="/img/clonezilla/backups3.png">
+    <img src="/img/clonezilla/backups3.png" alt="backups3" width="400" />
+  </a>
+  <figcaption>Haz clic para ver la imagen ampliada en la misma pestaña</figcaption>
+</figure>
+
+
+A diferencia de la clonación, el **backup** genera un **archivo de imagen** que contiene todas las particiones del disco origen.  
+Esa imagen puede almacenarse, comprimirse o dividirse en varios archivos.
+
+El proceso tiene **dos etapas**:
+1. **Copia:** Se crea una imagen (.img, .iso, .dd, etc.) del disco origen.  
+2. **Restauración:** Se vuelca la imagen en otro disco, recreando la estructura original.
+
+**Ventajas:**
+- No se necesita un disco idéntico, solo **espacio suficiente** para los datos.  
+- Permite almacenar múltiples imágenes en un mismo dispositivo o NAS.  
+- Ideal para **copias de seguridad periódicas**.
+
+---
+
+## Sistema en red para respaldo de archivos
+
+<figure>
+  <a href="/img/clonezilla/backups2.png">
+    <img src="/img/clonezilla/backups2.png" alt="backups2" width="400" />
+  </a>
+  <figcaption>Haz clic para ver la imagen ampliada en la misma pestaña</figcaption>
+</figure>
+
+
+Un **entorno de red** permite centralizar y automatizar el proceso de clonación o backup.
+
+### Componentes principales:
+- **Router:** Asigna IPs mediante DHCP y conecta todos los dispositivos.  
+- **PXE-server:** Permite arrancar los clientes por red usando imágenes ISO almacenadas en un servidor Ventoy.  
+- **NAS-server:** Almacena las imágenes o backups accesibles por SSH, NFS o Samba.  
+- **Clientes:** Equipos que arrancan desde red y ejecutan Clonezilla o la herramienta de clonación.
+
+Con esta infraestructura, varios clientes pueden **realizar o restaurar backups simultáneamente**, optimizando el tiempo y el espacio disponible.
+
+---
+
+## Conclusión
+
+La elección entre **clonación** y **backup** depende del objetivo:
+- Clonación → para reemplazar discos o replicar equipos completos.  
+- Backup → para conservar copias de seguridad y restaurarlas cuando sea necesario.  
+- Red PXE + NAS → para entornos multiusuario o educativos donde se automatiza el proceso.
+
+Ambas técnicas se complementan en la administración de sistemas, la recuperación ante desastres y la gestión de aulas informáticas.
