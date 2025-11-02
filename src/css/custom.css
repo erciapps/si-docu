@@ -1,4 +1,12 @@
+
 @import "tailwindcss";
+
+/* Sobrescribe estilos de Docusaurus si quieres */
+:root {
+  --ifm-color-primary: #2563eb;
+  --ifm-font-family-base: 'Inter', sans-serif;
+}
+
 
 /* 🔹 Oculta el panel derecho del TOC */
 .theme-doc-toc-desktop {

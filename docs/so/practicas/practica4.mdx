@@ -6,7 +6,22 @@ import TerminalBox from "@site/src/components/TerminalBox";
 import Image from '@theme/IdealImage';
 
 # Práctica 4 
-## PRÁCTICA POR GRUPOS (PARTE 1) PAREJAS (PARTE 2)
+
+<div class="flex p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+  <svg class="shrink-0 inline w-4 h-4 me-3 mt-[2px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+  </svg>
+  <span class="sr-only">Información</span>
+  <div>
+    <span class="font-medium">Organización de la práctica:</span>
+    <ul class="mt-1.5 list-disc list-inside">
+      <li>La primera parte se realiza en grupos de cuatro/cinco personas sobre equipos físicos, creando una copia de seguridad completa del sistema operativo en un dispositivo de red.</li>
+      <li>Posteriormente, por parejas, se restaura esa misma copia en un entorno virtual equivalente.</li>
+      <li>Esta organización permite optimizar los recursos disponibles y garantizar que todo el alumnado complete el proceso completo de backup y restauración.</li>
+    </ul>
+  </div>
+</div>
+
 
 ## Introducción
 Esta práctica consiste en realizar una copia exacta (backup) y restauración (en VMWare) de nuestro sistema operativo instado en la práctica anterior en los 
@@ -163,12 +178,28 @@ El procedimiento queda completado.
 Finalmente la copia queda almacenada en el dispositivo y ruta configurados. Esta copia puede ser restaurada en otro nuevo dispositivo del mismo equipo,
 en uno o varios equipos de una red, etc.
 
-## PARTE 2 (PRÁCTICA POR PAREJAS)
+## PARTE 2 RESTAURAR COPIA (PRÁCTICA POR PAREJAS)
+
+:::danger ANTES DE EMPEZAR
+ES IMPRESCINDIBLE AJUSTAR EL SISTEMA OPERATIVO COMO LINUX - UBUNTU 64bits PARA UN CORRECTO FUNCIONAMIENTO.
+<figure>
+  <img src="/img/clonezilla/vmsettings8.png" alt="vmsettings8" width="400" />
+</figure>
+* Crea un dispositivo virtual de al menos **520GB** (no te preocupes ya que no ocupará ese espacio realmente ya que unicamente usará el espacio real que ocupe)
+* Crea ese dispositivo virtual en una ubicación de tu equipo físico, que al menos disponga de 25GB (que es lo que realmente ocupará las particiones de disco).
+<figure>
+  <img src="/img/clonezilla/vmsettings8.png" alt="vmsettings8" width="400" />
+</figure>
+:::
+
 :::info ACTIVIDAD
-   
+* Realiza todos los pasos necesarios para realizar una restauración en uan máquina virtual de tu equipo, 
+del backup realizado en la primera parte de la práctica.   
 * **IMPORTANTE:** Realiza capturas de pantalla, documenta y comenta los pasos más importantes realizados.
 * Restaura en una máquina virtual de **VMWare**, el backup de la máquina asignada a tu grupo.
 :::
+
+
 
 :::note CUESTIONES
 1. ¿Qué ventajas tiene almacenar la copia del sistema operativo en un **servidor NAS** en lugar de en un disco local?  

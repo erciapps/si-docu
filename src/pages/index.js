@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import Layout from '@theme/Layout';
+import ModalCardUsuarios from '@site/src/components/ModalUsuarios';
+
 
 export default function Home() {
   useEffect(() => {
@@ -145,7 +147,7 @@ export default function Home() {
             <span style={pill('#fdba74')}>UT2</span>
             <h3 style={title}>Sistemas operativos</h3>
             <p style={desc}>
-              INSTALA SISTEMAS OPERATIVOS PLANIFICANDO EL PROCESO E INTERPRETANDO DOCUMENTACIÓN TÉCNICA
+              Instalación y funcionamiento de sistemas operativos. Copias de seguridad y restauración
             </p>
             <div style={{ textAlign: 'center' }}>
               <a href="/docs/category/sistemas-operativos" style={btn('#fb8c00')}>
@@ -154,6 +156,25 @@ export default function Home() {
             </div>
           </article>
 
+          {/* SISTEMAS OPERATIVOS */}
+          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#fdba74')}>UT3</span>
+            <h3 style={title}>Linux</h3>
+            <p style={desc}>
+              - en proceso
+            </p>
+            <div style={{ textAlign: 'center' }}>
+              <a href="/" style={btn('#fb8c00')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
+          </article>
+
+
+<div className="cards-grid">
+  <ModalCardUsuarios />
+</div>
           
 
 
