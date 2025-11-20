@@ -156,16 +156,31 @@ export default function Home() {
             </div>
           </article>
 
-          {/* SISTEMAS OPERATIVOS */}
+          {/* LINUX BASH */}
           <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#fdba74')}>UT3</span>
             <h3 style={title}>Linux</h3>
             <p style={desc}>
-              - en proceso
+              Manejo del sistema operativo por linea de comandos - Bash
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/" style={btn('#fb8c00')}>
+              <a href="/docs/linux/genially" style={btn('#fb8c00')}>
+                IR <span style={arrow}>→</span>
+              </a>
+            </div>
+          </article>
+
+          {/* LINUX BASH */}
+          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#fdba74')}>UT3</span>
+            <h3 style={title}>Python</h3>
+            <p style={desc}>
+              Frameworks para el manejo del sistema
+            </p>
+            <div style={{ textAlign: 'center' }}>
+              <a href="/docs/python/intro-python" style={btn('#fb8c00')}>
                 IR <span style={arrow}>→</span>
               </a>
             </div>
