@@ -1,0 +1,8 @@
+{
+  "label": "Bash",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Manejo de linux con bash"
+  }
+}

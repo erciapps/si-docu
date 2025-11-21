@@ -2,6 +2,7 @@
 sidebar_position: 2
 ---
 
+
 # Ejemplos básicos Python
 En esta sección aprenderemos los principios básicos del lenguaje Python, de una manera muy básica.
 * Python es un lenguaje **INTERPRETADO** al igual que `bash`, esto quiere decir que el lenguaje se ejecuta línea por línea.   
@@ -46,14 +47,12 @@ Una vez creado el proyecto podremos ver algo como lo mostrado en la siguiente im
 ## Crear un archivo nuevo con extensión `.py`
 Tenemos que hacer clic derecho sobre la carpeta del proyecto (`ejemploPython` en la imagen).
 Nos desplazamos a "New / Python File"
+
 <figure>
   <img src="/img/python/p3.png" alt="python3" width="500" />
 </figure>
 
 Creamos un nuevo archivo con el nombre `test`
-<figure>
-  <img src="/img/python/python3.png" alt="python3" width="200" />
-</figure>
 
 Añadimos el siguiente código de ejemplo:
 ```python
@@ -134,7 +133,7 @@ Las variables más comunes que podemos utilizar en python son:
 numero_entero = 10 
 
 # Convertir de string (str) a entero (int)
-precio = float("14")
+precio = int("14")
 ```
 ### **Flotantes (float)**
 ```python
@@ -459,3 +458,5 @@ print("Kelvin:", k)
 
 ```
 </details>
+
+
