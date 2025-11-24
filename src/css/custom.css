@@ -1,5 +1,58 @@
 
 @import "tailwindcss";
+/* Forzar que la sidebar esté disponible también en escritorio */
+@media (min-width: 996px) {
+  .navbar-sidebar__backdrop {
+    display: block !important;
+  }
+  .navbar-sidebar__container {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+  }
+}
+
+.menu-trigger {
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.menu-trigger:hover {
+  background-color: #f0f0f0;
+}
+
+.force-menu-button {
+  display: flex !important;
+}
+
+
+/* Fondo y bordes del menú desplegable */
+.navbar__dropdown {
+  border-radius: 8px;
+  padding: 6px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background-color: white;
+}
+
+/* Cada item dentro del dropdown */
+.navbar__link--subnav {
+  padding: 8px 16px;
+  color: #333 !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover sobre cada item */
+.navbar__link--subnav:hover {
+  background-color: #f0f0f0;   /* color de fondo al pasar el ratón */
+  color: #EB5E28 !important;   /* color del texto al pasar el ratón */
+}
+
+/* Hover del título en la barra (Linux) */
+.navbar__item.dropdown:hover > .navbar__link {
+  color: #EB5E28 !important;   /* color del texto del botón principal */
+}
+
+
 
 /* ==== ESTILO PRO TABLA MARKDOWN ====
    Válido para Docusaurus (modo claro/oscuro)

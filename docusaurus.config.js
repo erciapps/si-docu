@@ -83,6 +83,25 @@ const config = {
         { to: '/', label: 'Inicio', position: 'left' },
         { to: '/docs/category/hardware', label: 'Hardware', position: 'left' },
         { to: '/docs/category/sistemas-operativos', label: 'S.O', position: 'left' },
+        {
+        label: 'Linux',
+        to:'/docs/category/linux',
+        position: 'left',
+        items: [
+          {
+            label: 'Bash',
+            to: '/docs/category/bash',
+          },
+          {
+            label: 'Python',
+            to: '/docs/category/python',
+          },
+          {
+            label: 'Videos',
+            to: '/docs/linux/videos',
+          },
+        ],
+      },
       ],
     },
     footer: {
