@@ -165,7 +165,7 @@ export default function Home() {
               Manejo del sistema operativo por linea de comandos - Bash
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/docs/linux/genially" style={btn('#fb8c00')}>
+              <a href="/docs/category/bash" style={btn('#fb8c00')}>
                 IR <span style={arrow}>→</span>
               </a>
             </div>
@@ -180,7 +180,7 @@ export default function Home() {
               Frameworks para el manejo del sistema
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/docs/python/intro-python" style={btn('#fb8c00')}>
+              <a href="/docs/category/python" style={btn('#fb8c00')}>
                 IR <span style={arrow}>→</span>
               </a>
             </div>
