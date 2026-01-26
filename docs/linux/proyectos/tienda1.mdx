@@ -1,0 +1,149 @@
+---
+sidebar_position: 2
+---
+
+# (I) Proyecto: Almacén por terminal
+## Introducción
+Se trata de desarrollar una aplicación gestionada **exclusivamente mediante línea de comandos**, dedicada al control y gestión de los productos de una tienda.
+
+El proyecto combina scripts en **Python** y **Bash**, separando claramente las responsabilidades de cada tecnología:
+
+- **Bash** solicita los datos al usuario, los valida y se encarga de la creación, modificación y eliminación de directorios y archivos.
+- **Python** gestiona la lógica del programa y la modificación del contenido de los archivos `.json`.
+
+---
+
+## Lanzar el programa
+
+1. Clonar el repositorio del sistema `gitercilla` utilizando el comando:
+
+```bash
+git clone <ruta_a_tu_repositorio>
+```
+
+La clonación puede realizarse en cualquier ubicación del sistema de archivos del usuario.
+
+2. Ejecutar el script `instalar.sh`, que realiza las siguientes acciones:
+- Pide al usuario si realmente desea ejecutar el programa.
+- Crea un directorio con el nombre de la aplicación dentro del directorio personal del usuario que ejecuta el script (`$HOME`).
+- Copia en dicho directorio todos los elementos del proyecto:
+  - `main.py`
+  - el directorio `scripts/`
+  - el archivo `programa.log`
+- Crea en el directorio `/tiendas` la estructura de la tienda (categorías, marcas y productos).
+
+1. Tras ejecutar el script `instalar.sh`, la estructura general del sistema quedará de la siguiente manera:
+
+<img
+  src="/img/tienda/t0.png"
+  alt="estructura tienda"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+
+
+---
+
+## Aclaraciones
+
+:::danger MUY IMPORTANTE 
+> Al ejecutar el script `instalar.sh`, se asume que **ya existe el directorio `/tiendas`** con los permisos adecuados para permitir la creación de la estructura de la tienda.
+
+Dado que el directorio raíz `/` es propiedad del usuario `root` y el resto de usuarios no dispone de permisos de escritura, será necesario utilizar `sudo` para crear inicialmente el directorio:
+
+```bash
+sudo mkdir /tiendas
+sudo chmod 777 /tiendas
+```
+:::
+
+---
+
+## Estructura del proyecto
+
+El programa principal y los scripts auxiliares se almacenan en el directorio personal del usuario, mientras que los datos de la tienda se ubican en `/tiendas`.
+
+---
+
+## Descripción de archivos y directorios
+
+- **main.py**  
+Archivo principal del programa. Contiene el punto de entrada de la aplicación y muestra un menú interactivo en **Python**, navegable mediante teclado.
+
+- **scripts/python/**  
+Scripts auxiliares en Python encargados de la lectura y modificación del contenido de los archivos **.json**.
+
+- **scripts/bash/**  
+Scripts en Bash que solicitan datos al usuario, los validan y realizan operaciones sobre el sistema de archivos.
+
+- **programa.log**  
+Archivo de registro donde se almacenan los mensajes, acciones y errores generados durante la ejecución del programa.
+
+---
+
+## Consideraciones adicionales
+
+- El archivo `main.py` **no debe utilizar rutas absolutas**.
+- Todas las llamadas a scripts se realizarán mediante **rutas relativas**.
+
+Ejemplo correcto desde Python:
+
+```python
+subprocess.run(["./scripts/bash/crear_categoria.sh", "bebidas"])
+```
+
+---
+
+## Objetivo del proyecto
+
+Aplicar conceptos de:
+- uso de la línea de comandos,
+- validación de datos en Bash,
+- manipulación de archivos JSON con Python,
+- organización de proyectos en sistemas Linux.
+
+
+
+<!-- # Proyecto almacen por terminal
+Se trata de crear una aplicación totalmente manejada por linea de comandos, dedicada al control de productos de una tienda
+
+
+
+
+## Lanzar programa
+1. Clonar el repositorio del sistema `gitercilla` con `git clone <ruta a tu repo>` en cualquier ubicación.
+2. El script `instalar.sh` ejecuta lo siguiente:
+- Crea un directorio con el nombre de tu programa en el directorio de trabajo del usuario que está ejecutando el script en ese momento (`$HOME`). 
+- Copia todo el contendio en ese nuevo directorio (`main.py`, `scripts`, `bash`, `programa.log`)
+- Crea en `/tiendas` la estructura de la tienda, con categorías, marcas y algún producto.
+3. Tras lanzar el script la estructura total quedará  de la siguiente manera:
+<figure>
+  <img src="/img/tienda/t0.png" alt="estructura tienda" width="500" />
+</figure>
+
+### Aclaraciones
+
+
+:::danger MUY IMPORTANTE
+Al ejecutar el script `instalar.sh`, se asume que ya existe el directorio `/tiendas` con los permisos pertinentes para que te permita crear toda la estructura.   
+
+**NOTA:** Dado que el directorio raiz `/` es propietario del usuario `root` y el resto de usuarios no tienen permisos de escritura, será necesario usar el comando `sudo` para crear el directorio `tiendas`.
+:::
+
+
+**Descripción de archivos y directorios**
+
+- **main.py**  
+  Archivo principal del programa, ubicado en el directorio raíz del proyecto. Contiene el punto de entrada de la aplicación y muestra un menú interactivo en Python navegable mediante teclado.
+
+- **scripts/python/**  
+  Directorio que almacena los scripts auxiliares desarrollados en Python. Estos scripts se encargan de la lectura y modificación del contenido de los archivos **.json** que representan los productos de la tienda.
+
+- **scripts/bash/**  
+  Directorio que contiene los scripts desarrollados en Bash. Estos scripts son responsables de crear, modificar y eliminar directorios y archivos dentro de la estructura de la tienda.
+
+- **programa.log**  
+  Archivo de registro (log) donde se almacenan los mensajes, acciones y posibles errores generados durante la ejecución del programa.
+
+ -->

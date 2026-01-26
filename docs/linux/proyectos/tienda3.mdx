@@ -1,0 +1,95 @@
+---
+sidebar_position: 2
+---
+
+# (III) Proyecto: Opción crear
+
+
+
+
+
+## Crear categoría
+
+
+<img
+  src="/img/tienda/crearcategoria.png"
+  alt="crear categoria"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+Al seleccionar la opción **CREAR → CATEGORÍA** desde el menú principal, el programa deberá solicitar al usuario el nombre de la nueva categoría.
+
+La creación de la categoría se realizará mediante un **script en Bash**, invocado desde el programa principal en Python.
+
+---
+
+### Entrada de datos
+
+El sistema mostrará un mensaje solicitando el nombre de la nueva categoría:
+
+> Indica el nombre de la nueva categoría:
+
+El usuario deberá introducir el nombre por teclado.
+
+---
+
+### Validaciones obligatorias
+
+Antes de crear la categoría, el script en Bash deberá realizar las siguientes validaciones:
+
+- El nombre de la categoría **no puede estar vacío**.
+- El nombre de la categoría **no puede contener espacios en blanco únicamente**.
+- El nombre de la categoría **no puede contener el carácter `/`**.
+- El nombre de la categoría **no puede contener caracteres especiales o extraños** distintos de letras y números.
+
+En caso de que alguna validación falle, el sistema deberá:
+
+- mostrar un mensaje de error indicando el motivo,
+- solicitar al usuario que introduzca un nuevo nombre,
+- o permitir salir de la operación.
+
+Ejemplo de mensaje de error:
+
+> Error: el nombre de la categoría ya existe o contiene caracteres no válidos.  
+> Indique otro nombre.
+
+---
+
+### Comprobación de existencia
+
+Antes de crear la categoría, el script deberá comprobar si ya existe un directorio con el mismo nombre dentro de la tienda.
+
+- Si la categoría **ya existe**, se mostrará un mensaje informando al usuario y no se creará el directorio.
+- Si la categoría **no existe**, se procederá a crear el directorio correspondiente.
+
+---
+
+### Creación de la categoría
+
+Cuando el nombre sea válido y no exista previamente, el script deberá:
+
+- crear el directorio de la nueva categoría dentro de la tienda,
+- mostrar un mensaje de confirmación al usuario.
+
+Ejemplo:
+
+> Categoría creada correctamente.  
+> Pulsa una tecla para continuar.
+
+---
+
+### Flujo de retorno
+
+Tras finalizar la operación (tanto si se crea la categoría como si se produce un error), el programa deberá permitir:
+
+- volver al menú anterior,
+- o continuar con nuevas operaciones según la opción seleccionada.
+
+---
+
+### Consideraciones 
+
+- Toda la lógica de validación y creación de directorios se implementará en **Bash**.
+- El programa en **Python** se limitará a mostrar el menú y ejecutar el script correspondiente.
+- No se permitirá la creación de categorías con nombres que puedan comprometer la estructura del sistema de archivos.

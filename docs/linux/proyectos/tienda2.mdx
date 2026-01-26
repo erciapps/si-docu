@@ -1,0 +1,87 @@
+---
+sidebar_position: 2
+---
+
+# (II) Proyecto: Descripción del menú
+
+## Menú principal de la aplicación
+
+El programa deberá iniciarse mostrando un **menú principal en modo texto**, navegable mediante teclado, similar al que se muestra en la siguiente imagen:
+
+<img
+  src="/img/tienda/menutienda.png"
+  alt="menu tienda"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+El menú principal deberá contener, al menos, las siguientes opciones:
+
+- **CREAR**
+- **BUSCAR**
+- **SALIR**
+
+La navegación por el menú deberá realizarse utilizando el teclado, permitiendo al usuario seleccionar una opción de forma interactiva.
+
+---
+
+## Opción CREAR
+
+La opción **CREAR** permitirá al usuario crear nuevos elementos dentro de la tienda.  
+Desde esta opción, el programa deberá ofrecer submenús que permitan:
+
+- Crear **categorías**.
+- Crear **marcas** dentro de una categoría existente.
+- Crear **productos** asociados a una marca y categoría.
+
+La creación de productos deberá solicitar al usuario, como mínimo, los siguientes datos:
+- código de producto,
+- nombre,
+- descripción,
+- precio,
+- stock,
+- tipo de envase.
+
+Los datos introducidos deberán ser **validados previamente** antes de ser almacenados.  
+La información de los productos se almacenará en archivos **.json**.
+
+---
+
+## Opción BUSCAR
+
+La opción **BUSCAR** permitirá localizar información existente dentro del sistema.  
+Desde esta opción, el usuario podrá:
+
+- Buscar **categorías**.
+- Buscar **marcas**.
+- Buscar **productos**.
+
+La búsqueda de productos deberá permitir, al menos:
+- buscar por **código de producto**,
+- buscar por **descripción**.
+
+Una vez localizado un elemento, el programa deberá permitir:
+- **editar** sus datos,
+- **eliminar** el elemento seleccionado.
+
+Además, la opción BUSCAR deberá permitir:
+- visualizar **productos pertenecientes a otras tiendas** distintas a la tienda actual,
+- estos productos externos **solo podrán visualizarse**, no editarse ni eliminarse.
+
+---
+
+## Opción SALIR
+
+Al seleccionar la opción **SALIR**, el programa deberá solicitar confirmación al usuario mediante un mensaje similar al siguiente:
+
+> ¿Realmente deseas salir?
+
+El usuario podrá confirmar la salida o regresar al menú principal.
+
+---
+
+## Consideraciones adicionales
+
+- La lógica del menú y la interacción con el usuario se implementará en **Python**.
+- Las operaciones de creación, modificación y eliminación de archivos y directorios se realizarán mediante **scripts en Bash**, invocados desde Python.
+- El programa deberá funcionar íntegramente desde la línea de comandos.

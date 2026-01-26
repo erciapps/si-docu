@@ -165,14 +165,14 @@ export default function Home() {
               Manejo del sistema operativo por linea de comandos - Bash
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/bash" style={btn('#fb8c00')}>
+              <a href="/docs/category/linux" style={btn('#fb8c00')}>
                 IR <span style={arrow}>→</span>
               </a>
             </div>
           </article>
 
           {/* LINUX BASH */}
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+          {/* <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#fdba74')}>UT3</span>
             <h3 style={title}>Python</h3>
@@ -184,7 +184,7 @@ export default function Home() {
                 IR <span style={arrow}>→</span>
               </a>
             </div>
-          </article>
+          </article> */}
 
 
 <div className="cards-grid">
