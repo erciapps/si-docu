@@ -1,0 +1,100 @@
+---
+sidebar_position: 5
+---
+
+# 5. Opción buscar/editar por CÓDIGO
+
+
+## Buscar, editar y eliminar producto
+
+<img
+  src="/img/tienda/buscar_editar_eliminar.png"
+  alt="buscar editar eliminar"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+El menú **BUSCAR** permite localizar un producto por su código y, en caso de existir, editarlo o eliminarlo.
+
+El proceso combina Bash y Python:
+
+- Bash se encarga de localizar y eliminar archivos.
+- Python se encarga de editar el contenido del JSON.
+
+---
+
+### Búsqueda por código
+
+El sistema solicitará el código del producto:
+
+> Indica el código del producto:
+
+El script en Bash deberá comprobar si existe un archivo con ese código dentro de la tienda.
+
+Si no se encuentra coincidencia:
+- No se ha encontrado ninguna coincidencia.
+- Pulsa una tecla para volver o intentarlo de nuevo.
+
+---
+
+### Producto encontrado
+
+Si el producto existe, se mostrará su información:
+
+- nombre
+- descripción
+- precio
+- stock
+- envase
+
+A continuación se ofrecerán opciones:
+
+> ¿Qué desea hacer?  
+> Editar (e), Borrar (b), Volver (v)
+
+---
+
+### Editar producto
+
+Si el usuario selecciona editar:
+
+- se mostrarán los valores actuales del producto,
+- el sistema solicitará cada atributo permitiendo modificarlo,
+- el usuario podrá confirmar o cancelar la operación.
+
+Ejemplo:
+
+> Nombre actual: Agua con gas Lanjarón  
+> Nuevo nombre (enter para mantener):
+
+Los nuevos valores se enviarán a un script en Python encargado de actualizar el archivo JSON.
+
+Tras confirmar:
+
+> Producto actualizado correctamente.  
+> Pulsa una tecla para volver al menú.
+
+---
+
+### Eliminar producto
+
+Si el usuario selecciona borrar, el sistema solicitará confirmación:
+
+> ¿Realmente deseas eliminar este producto? [S/N]
+
+Solo si el usuario confirma, Bash eliminará el archivo.
+
+Ejemplo:
+
+> Producto eliminado con éxito.  
+> Pulsa una tecla para volver al menú.
+
+---
+
+### Consideraciones
+
+- No se permitirá editar productos inexistentes.
+- No se eliminará ningún archivo sin confirmación previa.
+- Cada producto se identifica por un código único.
+- Python gestiona el contenido del JSON.
+- Bash gestiona la existencia y eliminación de archivos.

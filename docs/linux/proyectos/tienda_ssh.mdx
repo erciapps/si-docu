@@ -1,0 +1,118 @@
+---
+sidebar_position: 4
+
+---
+
+# 4. Conexion por SSH
+
+
+## DESCRIPCIÓN
+**SSH (Secure Shell)** es un protocolo de red que permite a los usuarios comunicarse de forma segura con otros dispositivos 
+a través de una conexión cifrada. Es ampliamente utilizado en entornos de administración de sistemas para acceder de 
+manera remota a servidores y dispositivos de red. Su importancia radica en la capacidad de proporcionar un canal 
+seguro para la transferencia de datos sensibles, como contraseñas, comandos y archivos, 
+a través de una red no segura, como Internet.
+
+
+
+## OBJETIVOS
+* Comprender el funcionamiento de SSH y su importancia en la seguridad de las comunicaciones.
+* Configurar un servidor SSH en tu máquina local.
+* Permitir el acceso remoto a tu máquina a través de SSH.
+* Establecer una conexión SSH desde otra máquina.
+
+
+## Máquina SERVIDOR
+La máquina identificada como *****SSH SERVER***** será la destinada a recibir las conexiones, es decir, dispondrá del servidor SSH.
+
+## Máquina CLIENTE
+*****SSH CLIENT***** será nuestro cliente, es decir, nos conectaremos al servidor SSH desde esta máquina.
+
+<figure>
+  <img src="/img/tienda/SSH-Authentication.png" alt="autenticacionssh" width="520" />
+</figure>
+
+## PAUTAS SERVIDOR
+Realiza estas operaciones en el servidor (*****SSH SERVER*****)
+### 1. Instalación de OpenSSH Server.
+Utiliza el gestor de paquetes de tu sistema operativo para instalar el servidor OpenSSH.
+```bash
+sudo apt update
+sudo apt install openssh-server
+```
+
+### 2. Crear un usuario y grupo para la conexión por ssh.
+Lo ideal a la hora de dar acceso a un usuario a nuestro equipo, es establecer unas politicas de seguridad minimas. Por ello se 
+recomienda crear un grupo especifico con unas funciones bien marcadas dentro del sistema.
+- Crear el grupo `sshgroup`
+```bash
+sudo groupadd sshgroup
+```
+
+- Crear usuario `sshuser`
+```bash
+sudo adduser sshuser
+```
+
+- Establecer como **grupo principal** sshgroup al usuario `sshuser`
+```bash
+sshuser
+sudo usermod -g sshgroup sshuser
+```
+**Nota:** Para añadir como grupo secundario sustituir `-g` por `-aG`
+
+- Reiniciar el equipo
+```bash
+sudo reboot
+```
+
+### 3. Configuración de SSH.
+Edita el archivo de configuración de SSH para ajustar los parámetros según tus necesidades.
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+Ves al final del archivo y añade el siguiente comando para que unicamente permita el acceso a ese usuario:
+```
+AllowUsers `sshuser`
+```
+Si quieres añadir otros usuarios lo puedes hacer poniendo en la misma línea el nombre del usuario.
+**NOTA:** En caso de que quieras deengar el acceso a un usuario/s concreto, añade esta otra linea al final:
+```
+DenyUsers usuario
+```
+
+- Es necesario aplicar los cambios reiniciando el servicio:
+```
+sudo systemctl reload ssh
+```
+
+### 4. Establecer conexión cliente - servidor
+Antes de nada necesitas saber la ip del servidor al cual te quieres conectar. Para ello ejecuta el siguiente comando en el **servidor**:
+```
+ip a
+```
+Se obtiene una salida de este estilo:
+```
+alumno@damx-server:~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0@if51: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether bc:24:11:ae:3f:12 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.0.0.154/24 brd 10.0.0.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::be24:11ff:feae:3f12/64 scope link 
+       valid_lft forever preferred_lft forever
+```
+En el ejemplo anterior la ip asignada a la interfaz de red (inet) es: `10.0.0.154`
+
+- Para conectarnos desde una terminal ejecuta el siguiente comando:
+```
+ssh sshuser@ip_del_servidor
+```
+
+WinFsp.WinFsp
+winget install SSHFS-Win.SSHFS-Win

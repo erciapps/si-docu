@@ -2,10 +2,7 @@
 sidebar_position: 2
 ---
 
-# (III) Proyecto: Opción crear
-
-
-
+# 3. Opción crear
 
 
 ## Crear categoría
@@ -93,3 +90,232 @@ Tras finalizar la operación (tanto si se crea la categoría como si se produce 
 - Toda la lógica de validación y creación de directorios se implementará en **Bash**.
 - El programa en **Python** se limitará a mostrar el menú y ejecutar el script correspondiente.
 - No se permitirá la creación de categorías con nombres que puedan comprometer la estructura del sistema de archivos.
+
+
+## Crear marca
+
+
+<img
+  src="/img/tienda/crearmarca.png"
+  alt="crear marca"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+Al seleccionar la opción **CREAR → MARCA** desde el menú principal, el sistema permitirá crear una nueva marca dentro de una categoría existente.
+
+La creación de la marca se realizará mediante un **script en Bash**, invocado desde el programa principal en Python.
+
+---
+
+### Selección de categoría
+
+Antes de crear la marca, el sistema deberá mostrar al usuario la lista de categorías disponibles dentro de la tienda.
+
+Ejemplo:
+
+> ¿Dónde deseas crear la marca?  
+> Zumos  
+> Cerveza  
+> Agua  
+> Vino  
+
+El usuario deberá seleccionar una categoría válida o pulsar `s` para volver.
+
+---
+
+### Entrada de datos
+
+Una vez seleccionada la categoría, el sistema solicitará el nombre de la nueva marca:
+
+> Indica el nombre de la nueva marca:
+
+El usuario deberá introducir el nombre por teclado.
+
+---
+
+### Validaciones obligatorias
+
+Antes de crear la marca, el script en Bash deberá realizar las siguientes validaciones:
+
+- El nombre de la marca **no puede estar vacío**.
+- El nombre de la marca **no puede contener espacios en blanco**.
+- El nombre de la marca **no puede empezar por punto (`.`)**.
+- El nombre de la marca **no puede contener el carácter `/`**.
+- El nombre de la marca solo puede contener **letras, números, guión (-) o guión bajo (_)**.
+
+En caso de que alguna validación falle, el sistema deberá:
+
+- mostrar un mensaje de error indicando el motivo,
+- solicitar al usuario que introduzca un nuevo nombre,
+- o permitir salir de la operación.
+
+Ejemplo de mensaje de error:
+
+> Error: nombre de marca no válido.  
+> Indique otro nombre.
+
+---
+
+### Comprobación de existencia
+
+Antes de crear la marca, el script deberá comprobar si ya existe un directorio con el mismo nombre dentro de la categoría seleccionada.
+
+- Si la marca **ya existe**, se mostrará un mensaje informando al usuario y no se creará el directorio.
+- Si la marca **no existe**, se procederá a crear el directorio correspondiente.
+
+Ejemplo:
+
+> Error: la marca ya existe.  
+> Indique otro nombre.
+
+---
+
+### Creación de la marca
+
+Cuando el nombre sea válido y no exista previamente, el script deberá:
+
+- crear el directorio de la marca dentro de la categoría,
+- mostrar un mensaje de confirmación al usuario.
+
+Ejemplo:
+
+> Marca creada correctamente.  
+> Pulsa una tecla para continuar.
+
+---
+
+### Flujo de retorno
+
+Tras finalizar la operación (tanto si se crea la marca como si se produce un error), el programa deberá permitir:
+
+- volver al menú anterior,
+- o continuar con nuevas operaciones según la opción seleccionada.
+
+---
+
+### Consideraciones
+
+- Toda la lógica de validación y creación de directorios se implementará en **Bash**.
+- El programa en **Python** se limitará a mostrar el menú y ejecutar el script correspondiente.
+- No se permitirá la creación de marcas con nombres que puedan comprometer la estructura del sistema de archivos.
+- La marca siempre deberá crearse dentro de una categoría existente.
+
+
+## Crear producto
+
+<img
+  src="/img/tienda/crearproducto.png"
+  alt="crear producto"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+Al seleccionar la opción **CREAR → PRODUCTO**, el sistema permitirá crear un nuevo producto dentro de una marca existente.
+
+El proceso combina **Bash y Python**:
+
+- Bash crea el archivo JSON base.
+- Python gestiona posteriormente la modificación del contenido.
+
+---
+
+### Selección de categoría y marca
+
+El sistema solicitará:
+
+1. categoría del producto
+2. marca dentro de la categoría
+
+El usuario deberá seleccionar opciones válidas o pulsar `s` para volver.
+
+---
+
+### Código del producto
+
+El sistema solicitará el código del producto:
+
+> Indica el código del producto:
+
+Antes de crear el archivo, el script en Bash deberá comprobar:
+
+- que el código no esté vacío,
+- que solo contenga números o letras,
+- que no exista ya un archivo con ese código.
+
+Ejemplo:
+
+> Error: el código ya existe.  
+> Indique otro.
+
+---
+
+### Creación del archivo
+
+Si el código es válido, Bash creará el archivo:
+
+```
+Tienda/Categoría/Marca/codigo.json
+```
+
+Ejemplo:
+
+```
+5323.json
+```
+
+Además, Bash escribirá una estructura JSON inicial:
+
+```json
+{
+  "nombre": "",
+  "descripcion": "",
+  "precio": "",
+  "stock": "",
+  "envase": ""
+}
+```
+
+Esta estructura servirá como plantilla para que Python pueda modificar los datos posteriormente.
+
+---
+
+### Introducción de datos
+
+Tras crear el archivo, el sistema solicitará:
+
+- nombre del producto
+- descripción
+- precio
+- stock
+- tipo de envase
+
+Estos datos se enviarán a un script en Python encargado de actualizar el JSON.
+
+---
+
+### Confirmación
+
+Antes de guardar los datos, el sistema mostrará un resumen:
+
+> ¿La información es correcta? [S/N]
+
+Si el usuario confirma, Python actualizará el archivo.
+
+---
+
+### Flujo de retorno
+
+Tras finalizar la operación:
+
+- volver al menú anterior,
+- o continuar trabajando.
+
+---
+
+### Consideraciones
+
+- Bash se encarga de crear archivos y validar rutas.
+- Python se encarga de gestionar y modificar el contenido JSON.
+- No se permitirá sobrescribir productos existentes.
+- Cada producto se identifica por un código único.

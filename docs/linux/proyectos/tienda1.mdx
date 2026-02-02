@@ -2,7 +2,34 @@
 sidebar_position: 2
 ---
 
-# (I) Proyecto: Almacén por terminal
+# 1. Enunciado proyecto: Almacén por terminal
+
+## Recomendación: Instalar VSCode
+
+Instalar dependencias
+```
+sudo apt update
+sudo apt install wget gpg apt-transport-https -y
+```
+
+Añadir clave de Microsoft
+```
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
+```
+
+Añadir repositorio
+```
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+```
+
+Instalar VS code
+```
+sudo apt update
+sudo apt install code -y
+```
+Encontrarás el acceso directo desde aplicaciones/desarrollo
+
 ## Introducción
 Se trata de desarrollar una aplicación gestionada **exclusivamente mediante línea de comandos**, dedicada al control y gestión de los productos de una tienda.
 
@@ -13,7 +40,10 @@ El proyecto combina scripts en **Python** y **Bash**, separando claramente las r
 
 ---
 
-## Lanzar el programa
+
+
+
+## Funcionamiento final: lanzar el programa
 
 1. Clonar el repositorio del sistema `gitercilla` utilizando el comando:
 
