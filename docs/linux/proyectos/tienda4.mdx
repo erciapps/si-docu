@@ -23,6 +23,48 @@ El proceso combina Bash y Python:
 
 ---
 
+## Ayuda antes de empezar
+
+1. El directorio de inicio donde debe realizar la búsqueda es `/tiendas/tu_tienda` 
+2. Python muestra el menú y edita el JSON.
+3. Bash muestra el contenido del JSON y pasa los datos como argumentos a un scrip de python que se encarga de ello.
+
+El siguiente código te servirá de ejemplo para realizar esta primera parte de búsqueda y edición.
+```
+#!/bin/bash
+
+
+# IMPORTANTE: Ejecutar sudo apt install jq si no lo tienes instalado
+
+# Pedimos el codigo al usuario (aqui debes manejar posibles datos erroneos como valores vacios)
+read -p "Indica el codigo: " codigo
+
+# Almacenamos el resultado en la variable ruta
+ruta=$(find /tiendas/nombre_tienda -name "$codigo.json") # No te olvides poner el nombre de tu tienda
+
+# Comprobar si la ruta exsite
+if [[ $ruta == "" ]]; then
+    read -n1 -p "No se encuentra el codigo $codigo"
+    exit
+else
+    read -n1 -p "El producto con codigo $codigo se encuentra en  $ruta"
+fi
+
+# jq permite mostrar el valor de diferentes atributos del json.
+# Capturamos cada valor (el json tiene nombre, descripcion, cantidad) completar el resto
+nombre=$(jq -r '.nombre' $ruta)
+descripcion=$(jq -r '.descripcion' $ruta)
+cantidad=$(jq -r '.cantidad' $ruta)
+echo "$nombre $descripcion $cantidad"
+
+# Este apartado os vale para la parte de editar el producto ya que muestra en el propio read el contenido del json para que sea mas sencillo editar
+read -e -p "nombre: " -i "$nombre" nombre
+read -e -p "descripcion: " -i "$descripcion" descripcion
+read -e -p "cantidad: " -i "$cantidad" cantidad
+
+echo "$nombre $descripcion $cantidad"
+```
+
 ### Búsqueda por código
 
 El sistema solicitará el código del producto:
