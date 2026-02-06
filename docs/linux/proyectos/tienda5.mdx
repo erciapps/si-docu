@@ -1,0 +1,110 @@
+---
+sidebar_position: 6
+---
+
+# 6. Opción buscar/editar por DESCRIPCIÓN
+
+
+## Buscar, editar y eliminar producto
+
+<img
+  src="/img/tienda/buscar_desc_editar_eliminar.png"
+  alt="buscar editar eliminar"
+  width={500}
+  style={{ display: "block", margin: "0 auto" }}
+/>
+
+El menú **BUSCAR** permite localizar productos a partir de un texto dentro de su descripción y, en caso de existir coincidencias, editarlos o eliminarlos.
+
+El proceso combina Bash y Python:
+
+- Bash se encarga de pedir el filtro y mostrar los resultados.
+- Python se encarga de realizar la búsqueda dentro de los JSON.
+
+---
+
+## Ayuda antes de empezar
+
+1. El directorio de inicio donde debe realizar la búsqueda es `/tiendas/tu_tienda`
+2. Bash pide el filtro de búsqueda al usuario.
+3. Bash pasa el filtro como argumento a un script de Python.
+4. Python realiza una búsqueda buscando coincidencias en el atributo **descripcion**.
+5. Si se encuentran coincidencias, Python crea dos archivos:
+   - uno con las rutas de los productos encontrados
+   - otro con los nombres numerados
+6. Bash muestra el archivo de nombres numerados al usuario.
+7. El usuario selecciona un número.
+8. Bash obtiene la ruta correspondiente y muestra el contenido del JSON.
+9. A partir de ese momento se aplica la misma lógica del apartado anterior de **editar / eliminar**.
+
+---
+## Código de ejemplo en Bash
+
+Script encargado de pedir el filtro y mostrar resultados:
+```
+#!/bin/bash
+
+clear
+
+read -p "Indica un filtro": filtro
+
+python3 busqueda.py $filtro
+cat ./nombres_busqueda.txt
+read -p "Indica el numero de producto a editar, s para salir" numero
+
+contenido=$(sed -n "$numero"'p' ./rutas_busqueda.txt)
+echo "$contenido"
+cat $contenido
+```
+
+`busqueda.py` El siguiente código te servirá de ejemplo para realizar la búsqueda por descripción.
+```
+import json
+import sys
+from pathlib import Path
+
+def buscar():
+	ruta = Path.cwd() / "tienda" # Cambiar por la ruta de la tiedna 
+	filtro = sys.argv[1].lower()# Filtro que pasamos al script 
+	rutas = open("rutas_busqueda.txt", "w", encoding="utf-8")# Archivo para almacenar rutas 
+	nombres = open("nombres_busqueda.txt", "w", encoding="utf-8")# Archivo para almacenar nombres 
+	i = 1# variable para numerar elementos encontrados en la busqueda 
+	for archivo in ruta.rglob("*.json"):
+		# Cargar objeto json
+		datos = json.load(open(archivo))
+		descripcion = datos.get("descripcion")
+		# Comprobar si descripcion tiene parte del filtro
+		# Independientemente mayusculas de minusculas
+		# En caso de coincidencia meter a la lista
+		if filtro in descripcion.lower():
+			rutas.write(str(archivo)+"\n") # almacenar ruta en txt 
+			nombres.write(f"{i}. {datos.get('nombre')}\n")# almacenar nombre en txt con numeracion 
+		i+=1
+
+	# Cerrar archivos por seguridad		
+	nombres.close()
+	rutas.close()
+
+if __name__ == "__main__":
+	buscar()
+
+```
+
+## Resultado esperado
+
+- Si no hay coincidencias → se informa al usuario.
+- Si hay coincidencias → se muestra una lista numerada.
+- El usuario selecciona un producto.
+- Bash recupera la ruta real.
+- Se muestra el JSON.
+- A partir de ahí se puede editar o eliminar como en la búsqueda por código.
+
+---
+
+## Consideraciones
+
+- La búsqueda no distingue mayúsculas de minúsculas.
+- Cada coincidencia se numera automáticamente.
+- Bash controla la selección del usuario.
+- Python controla la lógica de búsqueda.
+- La edición y eliminación reutilizan la lógica del apartado anterior.
