@@ -1,94 +1,51 @@
-import React, { useEffect } from 'react';
+
 import Layout from '@theme/Layout';
 import ModalCardUsuarios from '@site/src/components/ModalUsuarios';
 
+import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    const cards = document.querySelectorAll('.lift-card');
-    const MAX_TILT = 10, MAX_MOVE = 10, HOVER_LIFT = 24, SCALE = 1.03;
+  const cards = document.querySelectorAll('.lift-card');
+  const HOVER_LIFT = 24;
+  const SCALE = 1.03;
 
-    const resetCard = (card) => {
-      card.style.setProperty('--rx', '0deg');
-      card.style.setProperty('--ry', '0deg');
-      card.style.setProperty('--tx', '0px');
-      card.style.setProperty('--ty', '0px');
-      card.style.setProperty('--lift', '0px');
-      card.style.setProperty('--scale', 1);
-      const glow = card.querySelector('.glow');
-      if (glow) {
-        glow.style.opacity = 0;
-        glow.style.background =
-          'radial-gradient(220px 140px at 50% 50%, rgba(255,255,255,.20), rgba(255,255,255,0) 65%)';
-      }
+  const resetCard = (card) => {
+    card.style.setProperty('--rx', '0deg');
+    card.style.setProperty('--ry', '0deg');
+    card.style.setProperty('--tx', '0px');
+    card.style.setProperty('--ty', '0px');
+    card.style.setProperty('--lift', '0px');
+    card.style.setProperty('--scale', 1);
+    const glow = card.querySelector('.glow');
+    if (glow) glow.style.opacity = 0;
+  };
+
+  cards.forEach((card) => {
+    const glow = card.querySelector('.glow');
+
+    const onEnter = () => {
+      card.style.setProperty('--lift', HOVER_LIFT + 'px');
+      card.style.setProperty('--scale', SCALE);
+      if (glow) glow.style.opacity = 0.4;
     };
 
-    const resetAll = () => cards.forEach(resetCard);
+    const onLeave = () => resetCard(card);
 
-    // tu lógica de onMove/onEnter/onLeave...
+    // ❌ sin mousemove
+    card.addEventListener('mouseenter', onEnter);
+    card.addEventListener('mouseleave', onLeave);
+
+    resetCard(card);
+  });
+
+  return () => {
     cards.forEach((card) => {
-      const glow = card.querySelector('.glow');
-
-      const onMove = (e) => {
-        const r = card.getBoundingClientRect();
-        const x = e.clientX - r.left;
-        const y = e.clientY - r.top;
-        const cx = r.width / 2, cy = r.height / 2;
-        const dx = x - cx, dy = y - cy;
-
-        const rx = (-dy / cy) * MAX_TILT;
-        const ry = (dx / cx) * MAX_TILT;
-        const tx = (dx / cx) * MAX_MOVE;
-        const ty = (dy / cy) * MAX_MOVE;
-
-        card.style.setProperty('--rx', rx.toFixed(2) + 'deg');
-        card.style.setProperty('--ry', ry.toFixed(2) + 'deg');
-        card.style.setProperty('--tx', tx.toFixed(2) + 'px');
-        card.style.setProperty('--ty', ty.toFixed(2) + 'px');
-        card.style.setProperty('--lift', HOVER_LIFT + 'px');
-        card.style.setProperty('--scale', SCALE);
-
-        if (glow) {
-          glow.style.opacity = 0.65;
-          glow.style.background =
-            `radial-gradient(220px 140px at ${x}px ${y}px, rgba(255,255,255,.20), rgba(255,255,255,0) 65%)`;
-        }
-      };
-
-      const onEnter = () => {
-        card.style.setProperty('--lift', HOVER_LIFT + 'px');
-        card.style.setProperty('--scale', SCALE);
-      };
-
-      const onLeave = () => resetCard(card);
-
-      card.addEventListener('mousemove', onMove);
-      card.addEventListener('mouseenter', onEnter);
-      card.addEventListener('mouseleave', onLeave);
-
-      // estado inicial limpio
-      resetCard(card);
+      card.replaceWith(card.cloneNode(true));
     });
+  };
+}, []);
 
-    // 🔁 Reset al volver de atrás / recuperar desde bfcache / recuperar foco
-    const onPageShow = () => resetAll();
-    const onPopState = () => resetAll();
-    const onFocus = () => resetAll();
-
-    window.addEventListener('pageshow', onPageShow); // incluye e.persisted=true (bfcache)
-    window.addEventListener('popstate', onPopState);
-    window.addEventListener('focus', onFocus);
-
-    return () => {
-      window.removeEventListener('pageshow', onPageShow);
-      window.removeEventListener('popstate', onPopState);
-      window.removeEventListener('focus', onFocus);
-      // Limpia listeners de cada card
-      cards.forEach((card) => {
-        card.replaceWith(card.cloneNode(true)); // truco rápido para soltar handlers
-      });
-    };
-  }, []);
 
 
   return (
@@ -172,19 +129,19 @@ export default function Home() {
           </article>
 
           {/* LINUX BASH */}
-          {/* <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT3</span>
-            <h3 style={title}>Python</h3>
+            <span style={pill('#fdba74')}>UT4</span>
+            <h3 style={title}>Servicios y prcoesos</h3>
             <p style={desc}>
-              Frameworks para el manejo del sistema
+              Servicios, procesos y tareas en Linux
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/python" style={btn('#fb8c00')}>
+              <a href="/docs/category/servicios" style={btn('#fb8c00')}>
                 IR <span style={arrow}>→</span>
               </a>
             </div>
-          </article> */}
+          </article> 
 
 
 <div className="cards-grid">

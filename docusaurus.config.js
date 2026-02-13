@@ -83,6 +83,7 @@ const config = {
         { to: '/', label: 'Inicio', position: 'left' },
         { to: '/docs/category/hardware', label: 'Hardware', position: 'left' },
         { to: '/docs/category/sistemas-operativos', label: 'S.O', position: 'left' },
+       
         {
         label: 'Linux',
         to:'/docs/category/linux',
@@ -99,6 +100,25 @@ const config = {
           {
             label: 'Videos',
             to: '/docs/linux/videos',
+          },
+        ],
+      },
+        {
+        label: 'Gestión',
+        to:'/docs/category/servicios-y-procesos',
+        position: 'left',
+        items: [
+          {
+            label: 'Procesos',
+            to: '/docs/servicios/procesos1',
+          },
+          {
+            label: 'Tareas',
+            to: '/docs/category/tareas',
+          },
+          {
+            label: 'Servicios',
+            to: '/docs/servicios/teoria-servicios',
           },
         ],
       },
