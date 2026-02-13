@@ -118,7 +118,7 @@ const config = {
           },
           {
             label: 'Servicios',
-            to: '/docs/servicios/teoria-servicios',
+            to: '/docs/category/servicios',
           },
         ],
       },
