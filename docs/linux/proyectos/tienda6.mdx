@@ -1,0 +1,95 @@
+---
+sidebar_position: 7
+---
+
+# 7. Sistema de Logs
+
+El archivo `programa.log` tendrá como finalidad registrar **todas las
+acciones relevantes** que se produzcan durante la ejecución del
+programa.
+
+El sistema de logs es obligatorio y debe implementarse correctamente
+desde cualquier script que genere información
+relevante.
+
+------------------------------------------------------------------------
+
+## ¿Qué debe registrarse?
+
+Se deben registrar, como mínimo, los siguientes tipos de eventos:
+
+### 1. Inicio y fin de sesión
+
+-   Cuando el usuario inicia el programa.
+-   Cuando el usuario sale del programa.
+
+Ejemplo:
+
+18:30-20/03/25 \| SESIÓN \| Inicio del programa\
+18:45-20/03/25 \| SESIÓN \| Fin del programa
+
+------------------------------------------------------------------------
+
+### 2. Operaciones realizadas
+
+Cualquier acción que modifique el sistema debe registrarse, por ejemplo:
+
+-   Crear categoría
+-   Crear producto
+-   Editar producto
+-   Eliminar producto
+-   Actualizar stock
+-   Instalar sistema
+
+Ejemplo:
+
+18:32-20/03/25 \| PRODUCTO \| Producto con código 1234 creado\
+18:35-20/03/25 \| CATEGORIA \| Categoría bebidas creada
+
+------------------------------------------------------------------------
+
+### 3. Registro de errores
+
+Se deben registrar todos los errores relevantes, por ejemplo:
+
+-   Intentar crear un producto con código ya existente
+-   Acceso a archivo inexistente
+-   Error de validación de datos
+-   Error al ejecutar un script
+
+Ejemplo:
+
+18:36-20/03/25 \| ERROR \| El producto con código 1234 ya existe\
+18:37-20/03/25 \| ERROR \| No se pudo leer el archivo 5623.json
+
+------------------------------------------------------------------------
+
+## Formato obligatorio del log
+
+Cada línea del archivo `programa.log` deberá seguir exactamente el
+siguiente formato:
+
+HH:MM-DD/MM/AA \| TIPO \| Descripción del evento
+
+Donde:
+
+-   HH:MM → Hora en formato 24h\
+-   DD/MM/AA → Fecha\
+-   TIPO → Puede ser:
+    -   SESIÓN
+    -   PRODUCTO
+    -   CATEGORIA
+    -   ERROR
+-   Descripción → Texto claro y descriptivo de lo ocurrido.
+
+------------------------------------------------------------------------
+
+## Requisitos
+
+-   El archivo `programa.log` debe crearse automáticamente si no existe.
+-   No se deben usar rutas absolutas.
+-   El log debe añadirse al final del archivo (modo append).
+-   No se debe sobrescribir el contenido anterior.
+-   El registro debe realizarse inmediatamente después de cada acción.
+
+------------------------------------------------------------------------

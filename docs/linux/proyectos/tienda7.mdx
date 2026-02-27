@@ -1,0 +1,124 @@
+---
+sidebar_position: 8
+---
+
+# 8. Publicidad generada por IA
+En este apartado enviaremos información desde nuestro script hacia un
+webhook de **n8n**, que posteriormente generará un mensaje publicitario
+usando IA y lo enviará por correo.   
+
+:::info
+Deberás añadir un apartado de publicidad en el menú principal de python, que llame a su vez a un script de bash para que realice todo el proceso.
+:::
+
+------------------------------------------------------------------------
+
+## 8.1 Envío de datos al webhook desde Bash
+
+Ejemplo de llamada HTTP mediante `curl`:
+
+```bash
+curl -s -X POST "http://IP_SERVIDOR_N8N:5678/webhook/endpoint \
+  -H "Content-Type: application/json" \
+  -d '{
+        "email": "'"$email"'",
+        "mensaje": "'"$mensaje"'",
+      }'
+
+```
+
+### Explicación
+
+-   `-X POST` → Método HTTP.
+-   `Content-Type: application/json` → Indicamos que enviamos JSON.
+-   `$email` → Parámetro 1: Correo del destinatario.
+-   `$mensaje` → Parámetro 2: Contenido del mensaje
+
+:::danger
+Debes ajustar los parámetros enviados acorde a la información que enviarás al webhook de n8n.    
+Mira el apartado 5 de este proyecto para ayudarte a localizar el producto y poder obtener los datos para el script:
+[Implementar servicio n8n](/docs/linux/proyectos/tienda4.mdx)
+:::
+
+------------------------------------------------------------------------
+
+## 8.2 Ejemplo de producto enviado
+
+``` json
+{
+  "nombre": "Cerveza Artesana Dorada 33cl",
+  "descripcion": "Cerveza artesanal de sabor equilibrado con notas suaves de malta.",
+  "precio": "1.25",
+  "stock": "45",
+  "envase": "Vidrio"
+}
+```
+
+------------------------------------------------------------------------
+
+## 8.3 Prompt utilizado en Ollama
+
+Para generar el mensaje publicitario usaremos el modelo disponible en
+nuestro servidor `ollama`. Le pasaremos a la IA el siguiente mensaje:
+```
+    Eres un redactor publicitario profesional.
+
+    Debes generar un anuncio en formato HTML válido para enviarse por correo electrónico.
+
+    REGLAS ESTRICTAS:
+    - Devuelve SOLO HTML.
+    - No incluyas explicaciones.
+    - No uses markdown (** o #).
+    - No uses saltos de línea \n.
+    - No inventes información que no esté en los datos.
+    - Máximo 90 palabras.
+
+    ESTRUCTURA OBLIGATORIA:
+    - Un <h2> con el nombre del producto.
+    - Un <p> con la descripción persuasiva.
+    - Un <p> con el precio y el stock.
+    - Un <p> final con una llamada a la acción.
+    - Usa <strong> para destacar el precio.
+    - Usa estilo inline simple (color o negrita ligera).
+
+    DATOS:
+    {{ $json.body.producto.nombre }}
+    {{ $json.body.producto.descripcion }}
+    {{ $json.body.producto.precio }}
+    {{ $json.body.producto.stock }}
+    {{ $json.body.producto.envase }}
+```
+Como puedes ver, desde el webhook se está pasando la información
+referente al producto que posteriormente será utilizada por la IA para
+generar el anuncio en HTML.
+
+------------------------------------------------------------------------
+
+## 8.4 Flujo del proceso
+
+1.  El script en Bash obtiene el producto.
+2.  Se envía mediante `curl` al webhook de n8n.
+3.  n8n recibe el JSON.
+4.  El nodo de IA (Ollama) genera el anuncio en HTML.
+5.  El anuncio se envía por correo electrónico.
+6.  Se registra la operación en `programa.log`.
+
+------------------------------------------------------------------------
+
+## 8.5 Recomendaciones técnicas
+
+-   Usar siempre la URL de producción (`/webhook/`) y no
+    `/webhook-test/`.
+-   Validar el código de respuesta HTTP.
+-   Registrar errores en `programa.log`.
+-   No usar rutas absolutas.
+-   Asegurarse de que el JSON enviado es válido.
+
+## Imágenes
+
+### Mensaje generado: 
+<img src="/img/tienda/publi_ia.png" alt="ejemplo publicidad" width={500} style={{ display: "block", margin: "0 auto" }} /> 
+### Mensaje recibido: 
+<img src="/img/tienda/publi_ia2.png" alt="ejemplo publicidad2" width={500} style={{ display: "block", margin: "0 auto" }} /> 
+### Estructura del workflow: 
+<img src="/img/tienda/publi_ia3.png" alt="ejemplo publicidad3" width={500} style={{ display: "block", margin: "0 auto" }} />

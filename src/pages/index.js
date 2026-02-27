@@ -128,11 +128,10 @@ export default function Home() {
             </div>
           </article>
 
-          {/* LINUX BASH */}
           <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
             <span style={pill('#fdba74')}>UT4</span>
-            <h3 style={title}>Servicios y prcoesos</h3>
+            <h3 style={title}>Servicios y procesos</h3>
             <p style={desc}>
               Servicios, procesos y tareas en Linux
             </p>
