@@ -103,7 +103,7 @@ const config = {
           },
         ],
       },
-        {
+        /* {
         label: 'Gestión',
         to:'/docs/category/servicios-y-procesos',
         position: 'left',
@@ -121,7 +121,7 @@ const config = {
             to: '/docs/category/servicios',
           },
         ],
-      },
+      }, */
       ],
     },
     footer: {
