@@ -128,20 +128,20 @@ export default function Home() {
             </div>
           </article>
 
-  {/* CTA final 
+  
           <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT4</span>
-            <h3 style={title}>Servicios y procesos</h3>
+            <span style={pill('#fdba74')}>Certificados</span>
+            <h3 style={title}>Certificado CA</h3>
             <p style={desc}>
-              Servicios, procesos y tareas en Linux
+              Instrucciones para instalar certificado raiz para servicios Erciapps
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/servicios" style={btn('#fb8c00')}>
-                IR <span style={arrow}>→</span>
+              <a href="/docs/certificado" style={btn('#fb8c00')}>
+                IR <span style={arrow}></span>
               </a>
             </div>
-          </article> */}
+          </article> 
 
 
 <div className="cards-grid">
