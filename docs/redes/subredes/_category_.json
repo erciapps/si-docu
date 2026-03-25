@@ -1,0 +1,8 @@
+{
+  "label": "SUBREDES - VLANS",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "Subredes y vlans"
+  }
+}

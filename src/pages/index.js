@@ -128,6 +128,20 @@ export default function Home() {
             </div>
           </article>
 
+          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+            <div className="glow" style={glowStyle}></div>
+            <span style={pill('#fdba74')}>UT5</span>
+            <h3 style={title}>Redes</h3>
+            <p style={desc}>
+              Sistemas informáticos en red. Configuración, explotación y gestión de recursos
+            </p>
+            <div style={{ textAlign: 'center' }}>
+              <a href="/docs/redes/intro" style={btn('#fb8c00')}>
+                IR <span style={arrow}></span>
+              </a>
+            </div>
+          </article> 
+
   
           <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
@@ -142,6 +156,7 @@ export default function Home() {
               </a>
             </div>
           </article> 
+
 
 
 <div className="cards-grid">

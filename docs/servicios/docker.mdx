@@ -1,0 +1,166 @@
+---
+sidebar_position: 1
+---
+
+# Servicios en docker
+
+## Ejemplo sencillo de `docker-compose.yml` para una app Python
+
+:::warning entorno
+Antes de nada debes generar el archivo de requerimientos de la aplicación:
+
+``` shell
+# Activa el entorno virtual (cambia la ruta a tu entorno)
+source venv/bin/activate 
+# Ejecuta en el directorio raiz de tu proyecto
+pip freeze > requirements.txt 
+```
+:::
+
+### Crea en el directorio raiz de tu proyecto, el archivo `docker-compose.yml`, y añade el siguiente contenido
+
+```yaml
+services:
+  flaskapp:
+    image: python:3.12-slim-bookworm
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "8888:8888"
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python tareas.py"
+    restart: unless-stopped
+```
+
+---
+
+### Explicación de cada parte
+
+### `services:`
+Aquí se definen los contenedores que va a levantar Docker Compose.
+
+En este caso solo hay uno: `flaskapp`.
+
+---
+
+### `flaskapp:`
+Es el **nombre del servicio**.
+
+No tiene por qué llamarse así. Podría llamarse `app`, `pythonapp` o cualquier otro nombre.
+
+---
+
+### `image: python:3.12-slim-bookworm`
+Indica la **imagen base** que se va a usar para crear el contenedor.
+
+- `python:3.12` → usa Python 3.12
+- `slim` → versión más ligera
+- `bookworm` → basada en Debian Bookworm
+
+Esto evita tener que instalar Python manualmente dentro del contenedor.
+
+---
+
+### `working_dir: /app`
+Marca la **carpeta de trabajo dentro del contenedor**.
+
+Eso significa que, cuando se ejecute el comando, Docker actuará como si estuviera situado dentro de `/app`.
+
+---
+
+### `volumes:`
+Sirve para **conectar una carpeta del ordenador real con una carpeta del contenedor**.
+
+```yaml
+volumes:
+  - .:/app
+```
+
+Esto significa:
+
+- `.` → la carpeta actual del host
+- `/app` → la carpeta dentro del contenedor
+
+Así, los archivos del proyecto se ven dentro del contenedor sin copiarlos manualmente.
+
+Si cambias un archivo en tu equipo, el contenedor lo ve también.
+
+---
+
+### `env_file:`
+Permite cargar variables de entorno desde un archivo.
+
+```yaml
+env_file:
+  - .env
+```
+
+Por ejemplo, en `.env` podrías tener:
+
+```env
+PUERTO=8888
+MODO=desarrollo
+```
+
+Luego la aplicación Python puede leer esas variables.
+
+---
+
+### `ports:`
+Sirve para **exponer puertos**.
+
+```yaml
+ports:
+  - "8888:8888"
+```
+
+Esto significa:
+
+- primer `8888` → puerto en tu máquina
+- segundo `8888` → puerto dentro del contenedor
+
+Si tu aplicación escucha en el puerto 8888 dentro del contenedor, podrás acceder desde fuera por ese mismo puerto.
+
+---
+
+### `command:`
+Es el comando que se ejecuta al arrancar el contenedor.
+
+```yaml
+command: sh -c "pip install --no-cache-dir -r requirements.txt && python tareas.py"
+```
+
+Aquí hace dos cosas:
+
+1. instala las dependencias del archivo `requirements.txt`
+2. ejecuta el archivo `tareas.py`
+
+#### Detalle:
+- `sh -c` permite ejecutar varios comandos juntos
+- `&&` hace que el segundo comando solo se ejecute si el primero sale bien
+- `--no-cache-dir` evita guardar caché de `pip`
+
+---
+
+### `restart: unless-stopped`
+Hace que el contenedor se reinicie automáticamente si se cae o si el sistema se reinicia.
+
+- `unless-stopped` → se reinicia salvo que tú lo hayas parado manualmente
+
+Es útil para servicios que deben quedar funcionando.
+
+---
+
+## Cómo arrancarlo
+
+```bash
+docker compose up
+```
+
+Si quieres reconstruir o limpiar mejor:
+
+```bash
+docker compose up --build
+```

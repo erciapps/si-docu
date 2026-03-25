@@ -1,0 +1,120 @@
+---
+sidebar_position: 2
+---
+
+# Manejo básico de UFW
+
+## ¿Qué es UFW?
+`ufw` significa **Uncomplicated Firewall**.  
+Es una forma sencilla de gestionar el cortafuegos en sistemas Linux.
+
+---
+
+## Ver estado
+
+```bash
+sudo ufw status
+```
+
+---
+
+## Activar / Desactivar
+
+```bash
+sudo ufw enable
+sudo ufw disable
+```
+
+---
+
+## Reglas por defecto
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+
+---
+
+## Permitir puertos
+
+```bash
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow ssh
+```
+
+---
+
+## Bloquear puertos
+
+```bash
+sudo ufw deny 21
+```
+
+---
+
+## TCP / UDP
+
+```bash
+sudo ufw allow 53/udp
+sudo ufw allow 80/tcp
+```
+
+---
+
+## Ver reglas numeradas
+
+```bash
+sudo ufw status numbered
+```
+
+---
+
+## Borrar regla
+
+```bash
+sudo ufw delete 2
+```
+
+---
+
+## Permitir IP concreta
+
+```bash
+sudo ufw allow from 192.168.1.50 to any port 22
+```
+
+---
+
+## Limitar SSH
+
+```bash
+sudo ufw limit ssh
+```
+
+---
+
+## Resetear
+
+```bash
+sudo ufw reset
+```
+
+---
+
+## Ejemplo típico
+
+```bash
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+```
+
+---
+
+## Consejo importante
+Permite SSH antes de activar UFW o perderás la conexión.
