@@ -130,6 +130,20 @@ export default function Home() {
 
           <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
             <div className="glow" style={glowStyle}></div>
+            <span style={pill('#fdba74')}>UT4</span>
+            <h3 style={title}>Servicios, procesos y tareas</h3>
+            <p style={desc}>
+              Programación de servicios, procesos y tareas con Bash - Python
+            </p>
+            <div style={{ textAlign: 'center' }}>
+              <a href="/docs/servicios/intro" style={btn('#fb8c00')}>
+                IR <span style={arrow}></span>
+              </a>
+            </div>
+          </article> 
+
+          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
+            <div className="glow" style={glowStyle}></div>
             <span style={pill('#fdba74')}>UT5</span>
             <h3 style={title}>Redes</h3>
             <p style={desc}>
