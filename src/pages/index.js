@@ -136,7 +136,7 @@ export default function Home() {
               Programación de servicios, procesos y tareas con Bash - Python
             </p>
             <div style={{ textAlign: 'center' }}>
-              <a href="/docs/servicios/intro" style={btn('#fb8c00')}>
+              <a href="/docs/category/servicios-y-procesos" style={btn('#fb8c00')}>
                 IR <span style={arrow}></span>
               </a>
             </div>

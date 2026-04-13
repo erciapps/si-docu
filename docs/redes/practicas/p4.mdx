@@ -1,0 +1,194 @@
+---
+sidebar_position: 4
+title: Práctica 4. Publicación de servicios web en Docker mediante DNS local y proxy inverso Nginx
+---
+
+# Práctica 4. Publicación de servicios web en Docker mediante DNS local y proxy inverso Nginx
+
+## 1. Título
+Configuración de un servidor DNS local y de un proxy inverso Nginx para publicar varios servicios web alojados en contenedores Docker en una misma máquina, accediendo a cada uno mediante un nombre de host distinto.
+
+## 2. Resultado de aprendizaje y criterios de evaluación
+
+### RA5. Interconecta sistemas en red configurando dispositivos y protocolos
+- **a)** Se ha configurado el protocolo TCP/IP.
+- **f)** Se han gestionado puertos de comunicaciones.
+- **g)** Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.
+
+### RA6. Opera sistemas en red gestionando sus recursos e identificando las restricciones de seguridad existentes
+- **c)** Se han explotado servidores de ficheros, servidores de impresión y servidores de aplicaciones.
+
+## 3. Objetivos de la práctica
+- Configurar la resolución DNS local para asociar varios nombres de host a una misma dirección IP.
+- Desplegar varios servicios web en contenedores Docker dentro de una misma máquina.
+- Configurar Nginx como proxy inverso para publicar esos servicios mediante distintos nombres de host.
+- Verificar el funcionamiento de la publicación web utilizando herramientas de red y navegador.
+- Distinguir el papel del DNS, del proxy inverso y de los contenedores en el acceso a un servicio web.
+
+## 4. Recursos necesarios
+- Servidor Proxmox.
+- Una máquina virtual o contenedor con Docker.
+- Un equipo cliente en la misma red.
+- Acceso a terminal en cliente y servidor.
+- Navegador web.
+- Servicio DNS local, por ejemplo `dnsmasq`, `bind9` o similar.
+- Servidor web Nginx configurado como proxy inverso.
+
+## 5. Escenario propuesto
+Se dispone de una máquina con IP `10.0.0.40` que aloja varios servicios web en contenedores Docker. Todos los servicios se publicarán a través de un único punto de entrada: Nginx.
+
+El cliente no accederá directamente a cada contenedor por puerto, sino que utilizará nombres de host diferentes que resolverán a la misma IP del servidor. Después, Nginx decidirá a qué servicio debe enviar cada petición según el nombre solicitado.
+
+Ejemplo de nombres:
+- `app1.local`
+- `app2.local`
+- `panel.local`
+
+Todos esos nombres resolverán a la misma IP:
+- `10.0.0.40`
+
+Ejemplo de asociación en Nginx:
+- `app1.local` → servicio web 1
+- `app2.local` → servicio web 2
+- `panel.local` → servicio web 3
+
+## 6. Desarrollo de la práctica
+
+### Parte 1. Preparación de la máquina servidora
+1. Comprueba que la máquina servidora tiene IP fija.
+2. Verifica que el cliente puede llegar a esa IP.
+3. Comprueba que Docker está instalado y funcionando.
+4. Comprueba que Nginx está instalado o disponible para su configuración como proxy inverso.
+
+Comandos orientativos:
+```bash
+ip a
+ip route
+ping 10.0.0.40
+docker ps
+systemctl status nginx
+```
+
+### Parte 2. Configuración del DNS local
+1. Instala o utiliza el servicio DNS local indicado por el profesor.
+2. Crea las entradas necesarias para que varios nombres apunten a la misma IP del servidor.
+3. Configura el cliente para que use ese servidor DNS.
+4. Comprueba la resolución de nombres.
+
+Ejemplo de comprobación:
+```bash
+nslookup app1.local
+nslookup app2.local
+nslookup panel.local
+```
+
+También se puede usar:
+```bash
+dig app1.local
+dig app2.local
+dig panel.local
+```
+
+Se debe comprobar que todos los nombres resuelven a la IP del servidor.
+
+### Parte 3. Despliegue de los servicios web
+1. Despliega al menos dos servicios web distintos en Docker.
+2. Cada servicio debe escuchar en un puerto interno diferente.
+3. Comprueba que los contenedores están activos.
+4. Verifica que cada servicio responde localmente antes de pasar por Nginx.
+
+Ejemplo orientativo:
+- servicio 1 en puerto `8081`
+- servicio 2 en puerto `8082`
+- servicio 3 en puerto `8083`
+
+Comprobación:
+```bash
+docker ps
+ss -tulpen
+curl http://127.0.0.1:8081
+curl http://127.0.0.1:8082
+curl http://127.0.0.1:8083
+```
+
+### Parte 4. Configuración de Nginx como proxy inverso
+1. Configura Nginx para escuchar en el puerto HTTP correspondiente.
+2. Crea una regla o bloque de servidor para cada nombre de host.
+3. Haz que cada nombre apunte al contenedor o servicio interno correcto.
+4. Reinicia o recarga la configuración de Nginx.
+5. Comprueba que Nginx escucha en el puerto 80.
+
+Ejemplo de asociación:
+- `app1.local` → contenedor del servicio 1
+- `app2.local` → contenedor del servicio 2
+- `panel.local` → contenedor del servicio 3
+
+Comprobación:
+```bash
+nginx -t
+systemctl reload nginx
+ss -tulpen | grep ':80'
+```
+
+### Parte 5. Verificación desde el cliente
+Desde el equipo cliente:
+1. Comprueba que los nombres resuelven correctamente.
+2. Accede desde el navegador a cada uno de los servicios usando su nombre de host.
+3. Verifica que cada nombre lleva al servicio correcto.
+4. Si algo falla, determina si el problema está en:
+   - la resolución DNS
+   - la configuración de Nginx
+   - el servicio Docker
+   - la conectividad de red
+
+### Parte 6. Comprobación final
+Responde y demuestra:
+1. Qué IP tiene la máquina servidora.
+2. Qué nombres de host has configurado.
+3. Qué comando has utilizado para comprobar la resolución DNS.
+4. Qué puerto utiliza Nginx para recibir las peticiones HTTP.
+5. Qué contenedor o servicio corresponde a cada nombre de host.
+6. Qué diferencia existe entre resolver un nombre y redirigir una petición HTTP al servicio correcto.
+7. Por qué el cliente puede acceder a varios servicios usando una única IP.
+
+## 7. Evidencias que debe entregar el alumnado
+La entrega debe incluir, como mínimo:
+
+- Captura o salida de `ip a` de la máquina servidora.
+- Captura o salida de `docker ps`.
+- Captura o salida de `nslookup` o `dig` para cada nombre configurado.
+- Captura o salida de `ss -tulpen` mostrando puertos de escucha.
+- Captura o fragmento relevante de la configuración de Nginx.
+- Captura del acceso correcto a cada servicio desde el navegador.
+- Respuestas breves a las preguntas finales.
+
+## 8. Rúbrica breve
+
+| Aspecto evaluado | Descripción | Peso |
+|---|---|---:|
+| Configuración del DNS local | Crea correctamente las entradas necesarias y consigue que el cliente resuelva los nombres | 25% |
+| Despliegue de servicios web | Levanta correctamente los servicios en Docker y comprueba su estado | 20% |
+| Configuración de Nginx como proxy inverso | Asocia correctamente cada nombre de host con el servicio correspondiente | 25% |
+| Verificación y diagnóstico | Utiliza comandos y pruebas para detectar si un fallo es de DNS, Nginx, puertos o contenedor | 20% |
+| Presentación de evidencias | Entrega capturas y respuestas de forma clara y ordenada | 10% |
+
+## 9. Relación entre rúbrica y criterios de evaluación
+- **Configuración del DNS local**: **RA5.a**
+- **Despliegue de servicios web**: **RA6.c**
+- **Configuración de Nginx como proxy inverso**: **RA5.f** y **RA6.c**
+- **Verificación y diagnóstico**: **RA5.g**
+- **Presentación de evidencias**: apartado formal de la entrega, no CE curricular independiente.
+
+## 10. Criterios de corrección rápidos
+- Los nombres configurados deben resolver a la IP indicada.
+- Los contenedores deben estar levantados y accesibles.
+- Nginx debe dirigir cada nombre al servicio correcto.
+- El alumnado debe demostrar que distingue entre problema de DNS, problema de Nginx y problema del contenedor.
+- La entrega debe incluir evidencias suficientes y ordenadas.
+
+## 11. Ampliación opcional
+Para subir nota o profundizar:
+- Añadir un cuarto servicio.
+- Configurar acceso HTTPS con certificado local o autofirmado.
+- Probar el funcionamiento usando archivo `hosts` y compararlo con DNS real.
+- Añadir una página de error personalizada en Nginx.

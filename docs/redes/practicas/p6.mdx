@@ -1,0 +1,183 @@
+---
+sidebar_position: 6
+title: Práctica 6. NAT y redirección de puertos en OpenWRT
+---
+
+# Práctica 6. NAT y redirección de puertos en OpenWRT
+
+## 1. Título
+Configuración de acceso entre redes mediante NAT y publicación controlada de un servicio interno usando redirección de puertos en OpenWRT.
+
+## 2. Resultado de aprendizaje y criterios de evaluación
+
+### RA5. Interconecta sistemas en red configurando dispositivos y protocolos
+- **e)** Se ha configurado el acceso a redes de área extensa.
+- **f)** Se han gestionado puertos de comunicaciones.
+- **g)** Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.
+- **h)** Se han aplicado protocolos seguros de comunicaciones.
+
+## 3. Objetivos de la práctica
+- Comprender la diferencia entre una red interna y una red externa.
+- Configurar OpenWRT para permitir salida desde una red interna hacia otra red.
+- Publicar un servicio interno mediante redirección de puertos.
+- Identificar qué puerto externo corresponde al puerto interno del servicio.
+- Comprobar el funcionamiento real de la publicación desde otra red.
+- Valorar los riesgos de exponer servicios y aplicar una publicación controlada.
+
+## 4. Recursos necesariosa
+- Router OpenWRT.
+- Una red interna con al menos un equipo o servidor.
+- Una red externa o equipo cliente situado en otra red.
+- Un servicio interno activo, por ejemplo:
+  - servidor web
+  - servidor SSH
+  - aplicación web en Docker
+- Acceso a la interfaz web o terminal de OpenWRT.
+- Acceso a terminal en cliente y servidor.
+
+## 5. Escenario propuesto
+Se dispone de:
+- una red interna, por ejemplo `192.168.10.0/24`
+- una red externa, por ejemplo `192.168.20.0/24`
+- un router OpenWRT entre ambas redes
+- un servidor interno con IP `192.168.10.10`
+- un cliente externo con IP `192.168.20.10`
+
+El servidor interno ofrece un servicio:
+- HTTP en puerto `80`, o
+- SSH en puerto `22`
+
+El objetivo es permitir:
+1. salida de la red interna hacia la red externa si procede
+2. acceso desde la red externa al servicio interno usando un puerto publicado en OpenWRT
+
+Ejemplo:
+- puerto externo `8080` -> servidor interno `192.168.10.10:80`
+
+## 6. Desarrollo de la práctica
+
+### Parte 1. Identificación de las redes
+1. Identifica la red interna y la red externa.
+2. Anota las IP de:
+   - OpenWRT en la interfaz interna
+   - OpenWRT en la interfaz externa
+   - servidor interno
+   - cliente externo
+3. Comprueba la conectividad básica dentro de cada red.
+
+Comandos orientativos:
+```bash
+ip a
+ip route
+ping 192.168.10.1
+ping 192.168.20.1
+```
+
+### Parte 2. Comprobación del servicio interno
+1. Comprueba que el servidor interno tiene el servicio activo.
+2. Verifica en qué puerto escucha.
+3. Accede localmente al servicio desde la red interna.
+
+Comandos orientativos:
+```bash
+ss -tulpen
+curl http://192.168.10.10
+```
+
+Si se usa SSH:
+```bash
+ss -tulpen | grep ssh
+ssh usuario@192.168.10.10
+```
+
+### Parte 3. Configuración de NAT o acceso entre redes
+1. Accede a OpenWRT.
+2. Revisa la configuración de interfaces y zonas.
+3. Comprueba que la red interna puede salir hacia la red externa si el profesor lo solicita.
+4. Identifica en qué zona está cada interfaz.
+5. Anota cómo se gestiona el tráfico entre zonas.
+
+### Parte 4. Configuración de la redirección de puertos
+1. Crea una regla de redirección en OpenWRT.
+2. Indica:
+   - zona de origen
+   - puerto externo
+   - IP interna de destino
+   - puerto interno
+   - protocolo
+3. Guarda y aplica la configuración.
+
+Ejemplo:
+- origen: WAN o red externa
+- puerto externo: `8080`
+- IP interna: `192.168.10.10`
+- puerto interno: `80`
+- protocolo: TCP
+
+### Parte 5. Verificación desde la red externa
+Desde el cliente externo:
+1. Accede a la IP externa de OpenWRT usando el puerto publicado.
+2. Comprueba que la petición llega al servicio interno correcto.
+3. Verifica que el acceso directo al servidor interno no funciona si no está permitido.
+4. Comprueba qué ocurre si cambias el puerto o desactivas la regla.
+
+Ejemplos:
+```bash
+curl http://192.168.20.1:8080
+```
+
+o bien desde navegador:
+- `http://192.168.20.1:8080`
+
+### Parte 6. Comprobación final
+Responde y demuestra:
+1. Qué red es la interna y cuál la externa.
+2. Qué IP tiene el servidor interno.
+3. Qué servicio se ha publicado.
+4. Qué puerto externo se ha usado.
+5. A qué puerto interno redirige.
+6. Qué diferencia hay entre publicar un servicio con OpenWRT y exponer un puerto en Docker.
+7. Qué riesgo de seguridad tiene publicar un servicio hacia otra red.
+
+## 7. Evidencias que debe entregar el alumnado
+La entrega debe incluir, como mínimo:
+
+- Esquema simple de la red.
+- Captura o salida de `ip a` del servidor interno y del cliente externo.
+- Captura o salida de `ss -tulpen` en el servidor interno.
+- Captura de la regla de redirección en OpenWRT.
+- Captura o prueba de acceso correcto desde la red externa.
+- Captura o explicación de una comprobación fallida cuando la regla no existe o está mal configurada.
+- Respuestas breves a las preguntas finales.
+
+## 8. Rúbrica breve
+
+| Aspecto evaluado | Descripción | Peso |
+|---|---|---:|
+| Identificación del escenario de red | Distingue correctamente red interna, red externa, IPs y función de OpenWRT | 20% |
+| Configuración de la redirección de puertos | Crea correctamente la regla de publicación del servicio | 30% |
+| Verificación del funcionamiento | Comprueba con pruebas reales que el acceso llega al servicio correcto | 25% |
+| Análisis de puertos y seguridad | Relaciona puerto externo, puerto interno y riesgo de exposición del servicio | 15% |
+| Presentación de evidencias | Entrega capturas y respuestas de forma clara y ordenada | 10% |
+
+## 9. Relación entre rúbrica y criterios de evaluación
+- **Identificación del escenario de red**: **RA5.e**
+- **Configuración de la redirección de puertos**: **RA5.e** y **RA5.f**
+- **Verificación del funcionamiento**: **RA5.g**
+- **Análisis de puertos y seguridad**: **RA5.f** y **RA5.h**
+- **Presentación de evidencias**: apartado formal de la entrega, no CE curricular independiente.
+
+## 10. Criterios de corrección rápidos
+- El alumnado debe distinguir correctamente las dos redes.
+- La regla de redirección debe apuntar al equipo y puerto correctos.
+- El servicio debe ser accesible desde la red externa a través del puerto publicado.
+- Debe quedar clara la relación entre puerto externo y puerto interno.
+- Debe justificarse al menos un riesgo de seguridad asociado a la publicación del servicio.
+- La entrega debe incluir evidencias suficientes y ordenadas.
+
+## 11. Ampliación opcional
+Para subir nota o profundizar:
+- Publicar un segundo servicio en otro puerto.
+- Restringir el acceso por origen.
+- Cambiar el servicio publicado de HTTP a SSH.
+- Comparar una redirección de OpenWRT con el mapeo de puertos de Docker.

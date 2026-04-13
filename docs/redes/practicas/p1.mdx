@@ -1,0 +1,200 @@
+---
+sidebar_position: 1
+title: Práctica 1. Configuración básica de una LAN cableada con IP estática y DHCP
+---
+
+# Práctica 1. Configuración básica de una LAN cableada con IP estática y DHCP
+
+## 1. Título
+Configuración básica de una red de área local cableada: direccionamiento IP estático, conectividad y asignación dinámica mediante DHCP.
+
+## 2. Contexto de la práctica
+En esta práctica el alumnado deberá montar y comprobar el funcionamiento básico de una red local cableada. Primero configurará manualmente varios equipos con direcciones IP estáticas dentro de la misma subred. Después verificará la conectividad entre ellos mediante comandos básicos de red. Finalmente, configurará un servicio DHCP para observar cómo se asignan automáticamente los parámetros de red a los clientes.
+
+La práctica está planteada como una introducción al trabajo real con redes locales y servirá de base para prácticas posteriores relacionadas con segmentación mediante VLAN, acceso remoto, resolución de nombres y seguridad.
+
+## 3. Resultado de aprendizaje y criterios de evaluación relacionados
+### RA5. Interconecta sistemas en red configurando dispositivos y protocolos
+- **a)** Se ha configurado el protocolo TCP/IP.
+- **b)** Se han configurado redes de área local cableadas.
+- **d)** Se han utilizado dispositivos de interconexión de redes.
+- **g)** Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.
+
+## 4. Objetivos didácticos
+Al finalizar la práctica, el alumnado deberá ser capaz de:
+- Configurar correctamente una dirección IP estática en un equipo.
+- Identificar la dirección de red, los hosts válidos y la dirección de difusión a partir de una máscara dada.
+- Comprobar si dos equipos pertenecen a la misma subred.
+- Verificar la conectividad básica entre equipos mediante herramientas de diagnóstico.
+- Configurar un servicio DHCP básico en la red local.
+- Comprobar la obtención automática de parámetros de red por parte de los clientes.
+- Diferenciar claramente entre configuración manual y automática de red.
+
+## 5. Recursos necesarios
+- 2 o 3 equipos físicos o máquinas conectadas por cable a la misma red local.
+- 1 switch o dispositivo de interconexión equivalente.
+- 1 router OpenWRT, servidor Linux o dispositivo que permita ofrecer servicio DHCP.
+- Cableado de red necesario.
+- Acceso con privilegios de administración a los equipos.
+- Hoja de recogida de resultados o documento digital para la entrega.
+
+## 6. Propuesta de direccionamiento
+Para esta práctica se utilizará la red:
+
+- **Red:** `10.0.0.0/29`
+- **Máscara:** `255.255.255.248`
+- **Rango de hosts válidos:** `10.0.0.1` a `10.0.0.6`
+- **Dirección de difusión:** `10.0.0.7`
+
+### Propuesta de uso de direcciones
+- Dispositivo que actuará como puerta de enlace o servidor DHCP: `10.0.0.1`
+- Cliente 1 con IP estática: `10.0.0.2`
+- Cliente 2 con IP estática: `10.0.0.3`
+- Cliente 3 opcional: `10.0.0.4`
+- Direcciones reservadas para pruebas DHCP: `10.0.0.5` y `10.0.0.6`
+
+## 7. Desarrollo de la práctica
+
+### Parte 1. Montaje físico de la red
+1. Conectar los equipos al switch mediante cable de red.
+2. Conectar también al switch el dispositivo que actuará como servidor DHCP o puerta de enlace.
+3. Comprobar que los indicadores físicos del enlace muestran conectividad.
+4. Anotar el nombre o identificador de cada equipo utilizado.
+
+### Parte 2. Configuración manual de direcciones IP estáticas
+Configurar manualmente dos equipos dentro de la red `10.0.0.0/29`.
+
+#### Configuración mínima requerida
+- **Cliente 1**
+  - IP: `10.0.0.2`
+  - Máscara: `255.255.255.248`
+  - Puerta de enlace: `10.0.0.1`
+
+- **Cliente 2**
+  - IP: `10.0.0.3`
+  - Máscara: `255.255.255.248`
+  - Puerta de enlace: `10.0.0.1`
+
+Si se usa un tercer cliente, se podrá asignar `10.0.0.4`.
+
+### Parte 3. Verificación de la configuración manual
+En cada cliente:
+1. Mostrar la configuración de red del equipo.
+2. Comprobar que la IP, la máscara y la puerta de enlace son correctas.
+3. Realizar pruebas de conectividad entre los equipos.
+4. Realizar una prueba de conectividad con la puerta de enlace si está configurada y operativa.
+
+#### Comandos orientativos
+**En Linux:**
+```bash
+ip a
+ip route
+ping 10.0.0.3
+ping 10.0.0.1
+```
+
+**En Windows:**
+```bat
+ipconfig
+route print
+ping 10.0.0.3
+ping 10.0.0.1
+```
+
+### Parte 4. Cálculo y comprobación de la subred
+El alumnado deberá indicar en la entrega:
+- Dirección de red.
+- Máscara en decimal y en notación CIDR.
+- Primera IP utilizable.
+- Última IP utilizable.
+- Dirección de difusión.
+- Número de hosts disponibles.
+
+### Parte 5. Configuración del servicio DHCP
+Una vez comprobado que la red funciona con configuración manual, se configurará un servicio DHCP.
+
+#### Requisitos mínimos del servidor DHCP
+- Interfaz conectada a la red `10.0.0.0/29`.
+- Dirección fija del servidor: `10.0.0.1`.
+- Rango DHCP sugerido: `10.0.0.5` a `10.0.0.6`.
+- Máscara entregada a los clientes: `255.255.255.248`.
+- Puerta de enlace entregada a los clientes: `10.0.0.1`.
+- DNS: puede dejarse `10.0.0.1` si el servicio lo soporta, o uno externo si se desea documentar aparte.
+
+### Parte 6. Obtención automática de dirección IP
+1. Seleccionar al menos un cliente para trabajar en modo DHCP.
+2. Cambiar la configuración de red del cliente de modo manual a automático.
+3. Renovar la concesión DHCP.
+4. Comprobar qué dirección IP ha recibido el equipo.
+5. Verificar que puede comunicarse con el resto de equipos de la red.
+
+#### Comandos orientativos
+**En Linux:**
+```bash
+ip a
+sudo dhclient -r
+sudo dhclient
+ip a
+ping 10.0.0.1
+```
+
+**En Windows:**
+```bat
+ipconfig /release
+ipconfig /renew
+ipconfig
+ping 10.0.0.1
+```
+
+### Parte 7. Comparación entre configuración estática y dinámica
+Responder brevemente a las siguientes cuestiones:
+1. ¿Qué diferencias hay entre configurar una IP manualmente y recibirla por DHCP?
+2. ¿Qué ventajas ofrece DHCP en una red con muchos equipos?
+3. ¿Qué problemas pueden aparecer si dos equipos usan la misma IP?
+4. ¿Qué ocurriría si se asigna una máscara incorrecta?
+
+## 8. Entregables
+La entrega deberá incluir, como mínimo:
+1. Un esquema sencillo de la red montada.
+2. Una tabla con los equipos utilizados y su configuración final.
+3. Capturas o evidencias de la configuración IP manual de al menos dos equipos.
+4. Capturas o evidencias de las pruebas de conectividad.
+5. Captura o evidencia del cliente obteniendo IP por DHCP.
+6. Respuesta a las preguntas de la parte final.
+7. Incidencias detectadas y cómo se resolvieron, si las hubo.
+
+## 9. Tabla de configuración sugerida para la entrega
+| Equipo | Tipo de configuración | Dirección IP | Máscara | Puerta de enlace | Observaciones |
+|---|---|---|---|---|---|
+| Servidor DHCP / Gateway | Estática | 10.0.0.1 | 255.255.255.248 | - | Servicio DHCP activo |
+| Cliente 1 | Estática | 10.0.0.2 | 255.255.255.248 | 10.0.0.1 | Conectividad correcta |
+| Cliente 2 | Estática | 10.0.0.3 | 255.255.255.248 | 10.0.0.1 | Conectividad correcta |
+| Cliente 3 o cliente DHCP | Dinámica | 10.0.0.5 o 10.0.0.6 | 255.255.255.248 | 10.0.0.1 | IP obtenida automáticamente |
+
+## 10. Criterios de corrección propuestos
+| Aspecto evaluado | Descripción |
+|---|---|
+| Configuración IP estática | El equipo queda correctamente configurado dentro de la subred indicada |
+| Comprensión de la máscara | El alumno identifica correctamente red, broadcast y rango útil |
+| Conectividad | Se verifican correctamente las comunicaciones mediante comandos |
+| Configuración DHCP | El servicio entrega parámetros válidos al cliente |
+| Verificación y diagnóstico | El alumno sabe comprobar el funcionamiento y detectar errores básicos |
+| Presentación de evidencias | La entrega contiene capturas, esquema y respuestas claras |
+
+## 11. Posibles incidencias para trabajar en clase
+Durante la práctica se puede provocar o analizar alguno de estos errores:
+- Máscara incorrecta en uno de los equipos.
+- Dos equipos con la misma dirección IP.
+- Puerta de enlace mal configurada.
+- Cliente conectado a un puerto o cable incorrecto.
+- DHCP mal definido o sin rango disponible.
+
+## 12. Ampliación opcional
+Para alumnado que termine antes o quiera profundizar:
+- Añadir un tercer cliente y comprobar la tabla de direcciones disponibles.
+- Comprobar la tabla ARP del sistema.
+- Analizar con Wireshark el proceso de concesión DHCP.
+- Probar qué ocurre si se reduce o amplía la máscara de red.
+
+## 13. Conclusión
+Esta práctica introduce los elementos básicos de configuración de una red local cableada. El alumnado trabaja el direccionamiento IP, la pertenencia a una subred, la conectividad entre equipos y la automatización de la configuración mediante DHCP. Estos contenidos servirán como base para prácticas posteriores de segmentación, acceso remoto y administración de servicios en red.

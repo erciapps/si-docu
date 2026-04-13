@@ -1,0 +1,190 @@
+---
+sidebar_position: 3
+title: Práctica 3. Configuración de un contenedor LXC con IP estática y acceso remoto mediante SSH y SFTP
+---
+
+# Práctica 3. Configuración de un contenedor LXC con IP estática y acceso remoto mediante SSH y SFTP
+
+## 1. Título
+Configuración de un contenedor LXC en Proxmox con direccionamiento IP estático y acceso remoto seguro mediante SSH y SFTP.
+
+## 2. Resultado de aprendizaje y criterios de evaluación
+
+### RA5. Interconecta sistemas en red configurando dispositivos y protocolos
+- **f)** Se han gestionado puertos de comunicaciones.
+- **g)** Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.
+- **h)** Se han aplicado protocolos seguros de comunicaciones.
+
+### RA6. Opera sistemas en red gestionando sus recursos e identificando las restricciones de seguridad existentes
+- **d)** Se ha accedido a los servidores utilizando técnicas de conexión remota.
+
+## 3. Objetivos de la práctica
+- Crear o utilizar un contenedor LXC en Proxmox.
+- Configurar una dirección IP estática en el contenedor.
+- Verificar la conectividad entre el equipo cliente y el contenedor.
+- Instalar, activar o comprobar el servicio SSH.
+- Acceder al contenedor de forma remota mediante SSH.
+- Transferir archivos de forma segura mediante SFTP o SCP.
+- Comprobar el puerto de escucha del servicio SSH.
+
+## 4. Recursos necesarios
+- Servidor Proxmox.
+- Un contenedor LXC con sistema Linux.
+- Un equipo cliente Linux o Windows con acceso por red al contenedor.
+- Acceso a terminal en el cliente y en el contenedor.
+- Red correctamente operativa.
+- Credenciales del usuario del contenedor.
+
+## 5. Direccionamiento propuesto
+El profesor indicará la red que se debe utilizar. Un ejemplo válido sería:
+
+- Red: `10.0.0.0/24`
+- Puerta de enlace: `10.0.0.1`
+- IP del contenedor LXC: `10.0.0.20`
+- Equipo cliente: `10.0.0.30`
+
+## 6. Desarrollo de la práctica
+
+### Parte 1. Comprobación o creación del contenedor
+1. Accede a Proxmox.
+2. Localiza el contenedor asignado o crea uno nuevo si el profesor lo indica.
+3. Comprueba que el contenedor está iniciado.
+4. Identifica su interfaz de red.
+
+### Parte 2. Configuración IP estática
+1. Configura la IP estática del contenedor según los datos proporcionados.
+2. Configura la máscara de red.
+3. Configura la puerta de enlace.
+4. Si procede, configura también el servidor DNS.
+5. Reinicia la red o el contenedor si es necesario.
+
+Ejemplo orientativo en sistemas Debian/Ubuntu:
+```bash
+ip a
+ip route
+```
+
+### Parte 3. Verificación de conectividad
+Desde el contenedor:
+```bash
+ip a
+ip route
+ping 10.0.0.1
+```
+
+Desde el equipo cliente:
+```bash
+ping 10.0.0.20
+```
+
+Comprobar:
+- que el contenedor responde a `ping`
+- que la puerta de enlace es accesible
+- que el equipo cliente alcanza al contenedor
+
+### Parte 4. Comprobación o instalación de SSH
+1. Verifica si el servicio SSH está instalado.
+2. Si no lo está, instálalo.
+3. Comprueba que el servicio está activo.
+4. Identifica el puerto en el que escucha.
+
+Comandos orientativos:
+```bash
+systemctl status ssh
+ss -tulpen | grep ssh
+```
+
+Si fuera necesario instalarlo:
+```bash
+sudo apt update
+sudo apt install openssh-server -y
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+
+### Parte 5. Acceso remoto mediante SSH
+Desde el equipo cliente, accede al contenedor:
+```bash
+ssh usuario@10.0.0.20
+```
+
+Comprueba:
+- que la conexión se establece correctamente
+- que el usuario puede iniciar sesión
+- que el acceso se realiza mediante el puerto correcto
+
+### Parte 6. Transferencia segura de archivos
+Realiza una transferencia de un archivo desde el cliente al contenedor o al revés.
+
+Ejemplo con SCP:
+```bash
+scp archivo.txt usuario@10.0.0.20:/home/usuario/
+```
+
+Ejemplo con SFTP:
+```bash
+sftp usuario@10.0.0.20
+```
+
+Dentro de SFTP:
+```bash
+put archivo.txt
+ls
+exit
+```
+
+### Parte 7. Comprobación final
+Responde y demuestra:
+1. Qué IP tiene el contenedor.
+2. Qué puerta de enlace utiliza.
+3. Qué puerto usa el servicio SSH.
+4. Qué comando has utilizado para conectarte.
+5. Qué comando has utilizado para transferir archivos.
+6. Qué comprobaciones has realizado para verificar que todo funciona.
+
+## 7. Evidencias que debe entregar el alumnado
+La entrega debe incluir, como mínimo:
+
+- Captura de la configuración IP del contenedor.
+- Captura o salida de `ip a`.
+- Captura o salida de `ip route`.
+- Captura de `ping` exitoso entre cliente y contenedor.
+- Captura del estado del servicio SSH.
+- Captura o salida de `ss -tulpen | grep ssh`.
+- Captura del acceso por SSH.
+- Captura de la transferencia realizada por SFTP o SCP.
+- Respuesta breve a las preguntas finales.
+
+## 8. Rúbrica breve
+
+| Aspecto evaluado | Descripción | Peso |
+|---|---|---:|
+| Configuración IP estática del LXC | El contenedor queda correctamente configurado dentro de la red indicada | 25% |
+| Conectividad y verificación | Comprueba correctamente la conectividad con comandos básicos | 20% |
+| Configuración del servicio SSH | Instala, activa o verifica correctamente el servicio SSH y su puerto | 20% |
+| Acceso remoto seguro | Se conecta correctamente al contenedor mediante SSH | 20% |
+| Transferencia segura de archivos | Realiza correctamente la transferencia mediante SFTP o SCP | 10% |
+| Presentación de evidencias | Entrega capturas y respuestas de forma clara y ordenada | 5% |
+
+## 9. Relación entre rúbrica y criterios de evaluación
+- **Configuración IP estática del LXC**: apoya la conectividad necesaria para la práctica.
+- **Conectividad y verificación**: **RA5.g**
+- **Configuración del servicio SSH**: **RA5.f** y **RA5.h**
+- **Acceso remoto seguro**: **RA5.h** y **RA6.d**
+- **Transferencia segura de archivos**: **RA5.h** y **RA6.d**
+- **Presentación de evidencias**: apartado formal de la entrega, no CE curricular independiente.
+
+## 10. Criterios de corrección rápidos
+- La IP estática debe ser válida y pertenecer a la red indicada.
+- El contenedor debe responder correctamente a las pruebas de conectividad.
+- El servicio SSH debe estar activo y accesible.
+- La conexión remota debe realizarse sin errores.
+- La transferencia de archivos debe completarse correctamente.
+- La entrega debe incluir evidencias suficientes y ordenadas.
+
+## 11. Ampliación opcional
+Para subir nota o profundizar:
+- Cambiar el puerto por defecto de SSH y volver a comprobar la conexión.
+- Probar autenticación mediante clave pública.
+- Restringir el acceso SSH a un usuario concreto.
+- Comparar el uso de SCP y SFTP.

@@ -1,0 +1,163 @@
+---
+sidebar_position: 2
+title: Práctica 2. Configuración de VLANs, puertos access y trunk
+---
+
+
+# Práctica 2. Configuración de VLANs, puertos access y trunk
+
+## 1. Título
+**Configuración de VLANs en switch Cisco y conexión mediante trunk a un router OpenWRT**
+
+## 2. Descripción de la práctica
+En esta práctica el alumnado trabajará la segmentación lógica de una red local mediante VLANs.  
+Para ello, configurará un switch Cisco creando varias VLANs, asignará puertos en modo **access** a cada una de ellas y establecerá un enlace en modo **trunk** hacia un router OpenWRT.
+
+El objetivo es comprobar que los equipos conectados a distintos puertos pueden quedar separados en redes diferentes aunque usen el mismo switch físico, y verificar el funcionamiento de la configuración mediante comandos y pruebas de conectividad.
+
+## 3. Resultado de aprendizaje y criterios de evaluación
+**RA5. Interconecta sistemas en red configurando dispositivos y protocolos.**
+
+**Criterios de evaluación trabajados:**
+- **b)** Se han configurado redes de área local cableadas.
+- **d)** Se han utilizado dispositivos de interconexión de redes.
+- **g)** Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.
+- **h)** Se han aplicado protocolos seguros de comunicaciones. *(Solo si se añaden reglas básicas de aislamiento o filtrado entre redes.)*
+
+## 4. Objetivos
+Al finalizar la práctica, el alumnado deberá ser capaz de:
+- Comprender el concepto de VLAN y su utilidad en la segmentación de redes.
+- Crear VLANs en un switch Cisco.
+- Configurar puertos en modo **access** y asociarlos a la VLAN correcta.
+- Configurar un puerto en modo **trunk** para transportar varias VLANs.
+- Relacionar cada VLAN con una red IP distinta.
+- Verificar el funcionamiento de la configuración mediante comandos y pruebas prácticas.
+- Comprobar el aislamiento entre equipos conectados a distintas VLANs.
+
+## 5. Recursos necesarios
+- 1 switch Cisco gestionable.
+- 1 router OpenWRT.
+- 2 o 3 equipos físicos o máquinas virtuales.
+- Cables de red.
+- Consola o acceso de administración al switch.
+- Acceso de administración al router OpenWRT.
+- Hoja o documento para recoger evidencias.
+
+## 6. Escenario propuesto
+
+Se trabajará con dos VLANs:
+
+- **VLAN 10**: Administración
+- **VLAN 20**: Usuarios
+
+Direccionamiento sugerido:
+
+- **VLAN 10** → red `192.168.10.0/24`
+- **VLAN 20** → red `192.168.20.0/24`
+
+Ejemplo de asignación:
+- Router OpenWRT VLAN 10: `192.168.10.1`
+- Router OpenWRT VLAN 20: `192.168.20.1`
+- Equipo 1 en VLAN 10: `192.168.10.10`
+- Equipo 2 en VLAN 20: `192.168.20.10`
+
+## 7. Tareas a realizar
+
+### Parte 1. Configuración física
+1. Conecta los equipos al switch Cisco.
+2. Conecta el switch al router OpenWRT mediante el puerto que se usará como **trunk**.
+3. Identifica qué puertos del switch se usarán para:
+   - Equipo de VLAN 10
+   - Equipo de VLAN 20
+   - Enlace trunk al router
+
+### Parte 2. Creación de VLANs en el switch Cisco
+1. Accede al switch por consola o por el método indicado por el profesor.
+2. Crea las VLANs necesarias:
+   - VLAN 10
+   - VLAN 20
+3. Asigna un nombre identificativo a cada VLAN.
+
+### Parte 3. Configuración de puertos access
+1. Configura el puerto del equipo 1 en modo **access**.
+2. Asócialo a la **VLAN 10**.
+3. Configura el puerto del equipo 2 en modo **access**.
+4. Asócialo a la **VLAN 20**.
+
+### Parte 4. Configuración del puerto trunk
+1. Selecciona el puerto del switch que conecta con OpenWRT.
+2. Configúralo en modo **trunk**.
+3. Permite el paso de las VLANs 10 y 20.
+
+### Parte 5. Configuración del router OpenWRT
+1. Accede a la administración de OpenWRT.
+2. Configura las interfaces necesarias para trabajar con las VLANs.
+3. Asigna una dirección IP a cada interfaz:
+   - VLAN 10 → `192.168.10.1/24`
+   - VLAN 20 → `192.168.20.1/24`
+4. Aplica los cambios.
+
+### Parte 6. Configuración de los equipos
+1. Configura manualmente la IP de cada equipo:
+   - Equipo en VLAN 10 → `192.168.10.10/24`
+   - Equipo en VLAN 20 → `192.168.20.10/24`
+2. Configura como puerta de enlace la dirección del router correspondiente a cada VLAN.
+
+### Parte 7. Verificación
+Realiza las siguientes comprobaciones:
+
+1. Muestra la configuración del switch y verifica:
+   - VLANs creadas.
+   - Puertos access asignados correctamente.
+   - Puerto trunk activo.
+
+2. Comprueba desde cada equipo:
+   - Dirección IP configurada.
+   - Máscara aplicada.
+   - Puerta de enlace.
+
+3. Realiza pruebas con comandos:
+   - `ip a` o `ipconfig`
+   - `ping`
+   - `traceroute` o `tracert` si procede
+
+4. Comprueba:
+   - Si cada equipo alcanza su puerta de enlace.
+   - Si existe o no comunicación directa entre equipos de VLAN distinta.
+   - Si el comportamiento coincide con lo esperado.
+
+### Parte 8. Cuestiones finales
+Responde brevemente:
+
+1. ¿Qué función cumple una VLAN?
+2. ¿Qué diferencia hay entre un puerto access y un puerto trunk?
+3. ¿Por qué dos equipos conectados al mismo switch pueden quedar separados?
+4. ¿Qué ocurriría si un puerto de usuario se configurase por error como trunk?
+5. ¿Qué ventajas aporta la segmentación mediante VLANs?
+
+## 8. Evidencias que debe entregar el alumnado
+La entrega debe incluir:
+
+- Captura o transcripción de la creación de las VLANs.
+- Captura o transcripción de la configuración de los puertos access.
+- Captura o transcripción de la configuración del trunk.
+- Capturas de la configuración IP de cada equipo.
+- Capturas de los comandos de verificación.
+- Respuesta a las cuestiones finales.
+- Esquema simple de la red utilizada.
+
+## 9. Criterios de corrección
+Se valorará:
+- La correcta creación de las VLANs.
+- La correcta configuración de puertos access y trunk.
+- El uso adecuado del router como elemento de interconexión.
+- La correcta configuración IP de los equipos.
+- La verificación razonada del funcionamiento de la red.
+- La claridad de las evidencias presentadas.
+
+## 10. Ampliación opcional
+Como ampliación, se puede añadir:
+- Una tercera VLAN.
+- Reglas en OpenWRT para permitir o bloquear tráfico entre VLANs.
+- Asignación de direcciones por DHCP diferenciadas por VLAN.
+- Prueba de acceso a un servicio ubicado en una VLAN concreta.
