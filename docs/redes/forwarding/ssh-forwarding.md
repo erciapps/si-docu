@@ -56,14 +56,60 @@ sudo apt install openssh-server -y
 sudo systemctl status ssh
 ```
 
-## 3. Iniciar y habilitar el servicio
+## 3. Crear un usuario para la conexión SSH
+
+En lugar de permitir el acceso remoto como `root`, es preferible crear un usuario específico para la conexión SSH.
 
 ```bash
-sudo systemctl enable ssh
-sudo systemctl start ssh
+sudo adduser sshuser
+sudo usermod -aG sudo sshuser
 ```
 
-## 4. Comprobar la dirección IP del servidor
+## 4. Editar la configuración del servidor SSH
+
+Edita el archivo de configuración:
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+
+Revisa al menos estas directivas:
+
+```text
+Port 22
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication yes
+```
+
+### Explicación rápida
+
+- **Port**: el puerto por defecto de SSH es el **22**.
+- **PermitRootLogin no**: deshabilita el acceso remoto directo como `root`.
+- **PubkeyAuthentication yes**: permite autenticarse mediante claves públicas.
+- **PasswordAuthentication yes**: permite autenticación por contraseña al principio.
+
+> Se recomienda dejar `PasswordAuthentication yes` durante la configuración inicial y cambiarlo a `no` después de comprobar que la conexión con claves funciona correctamente.
+
+<figure>
+  <img src="/2024/redes/img/sshconfig.png" alt="sshconfig" width="320" />
+</figure>
+
+## 5. Reiniciar el servicio
+
+```bash
+sudo systemctl restart ssh
+```
+
+## 6. Configurar el cortafuegos
+
+Si estás usando `ufw`, abre el puerto SSH:
+
+```bash
+sudo ufw allow ssh
+```
+
+## 7. Comprobar la dirección IP del servidor
 
 ```bash
 ip a
@@ -71,58 +117,173 @@ ip a
 
 Anota la dirección IP de **server1**, ya que la necesitarás desde el cliente.
 
+<figure>
+  <img src="/2024/redes/img/ipa.png" alt="Dirección IP del servidor" width="320" />
+</figure>
+
 ---
 
-# Conexión SSH desde el cliente
+# Pautas en el cliente
 
-Realiza estas operaciones desde **server2**.
+Realiza estas operaciones en **server2**.
 
-## 1. Conectarse al servidor
+## 1. Generar el par de claves SSH
+
+La forma correcta de trabajar con autenticación por clave es **generar las claves en el cliente**, no en el servidor.
 
 ```bash
-ssh usuario@IP_DEL_SERVIDOR
+ssh-keygen -t rsa -b 4096
+```
+
+### ¿Qué hace este comando?
+
+- **ssh-keygen**: genera un par de claves SSH.
+- **-t rsa**: indica que se utilizará el algoritmo RSA.
+- **-b 4096**: indica el tamaño de la clave.
+
+Durante el proceso, se te pedirá:
+
+- el nombre del archivo donde guardar la clave,
+- y una frase de paso opcional para aumentar la seguridad.
+
+El resultado será la creación de dos archivos en `~/.ssh/`:
+
+- **id_rsa** → clave privada
+- **id_rsa.pub** → clave pública
+
+> La **clave privada nunca debe compartirse**.  
+> La **clave pública** es la que se copia al servidor.
+
+<figure>
+  <img src="/2024/redes/img/sshconfig2.png" alt="Generación de claves SSH" width="450" />
+</figure>
+
+## 2. Comprobar los archivos generados
+
+```bash
+cd ~/.ssh
+ls -la
+```
+
+Verás algo parecido a esto:
+
+```text
+drwx------ 2 alumno alumno 4096 Mar 20 10:44 .
+drwxr-x--- 3 alumno alumno 4096 Mar 20 10:43 ..
+-rw------- 1 alumno alumno 3381 Mar 20 10:44 id_rsa
+-rw-r--r-- 1 alumno alumno  743 Mar 20 10:44 id_rsa.pub
+```
+
+## 3. Copiar la clave pública al servidor
+
+Utiliza este comando para copiar la clave pública del cliente al usuario `sshuser` del servidor:
+
+```bash
+ssh-copy-id sshuser@IP_DEL_SERVIDOR
 ```
 
 Ejemplo:
 
 ```bash
-ssh alumno@192.168.1.10
+ssh-copy-id sshuser@192.168.1.10
 ```
 
-## 2. Aceptar la huella del servidor
+Este comando añade automáticamente la clave pública al archivo `~/.ssh/authorized_keys` del servidor.
 
-La primera vez que te conectes, SSH preguntará si deseas confiar en la clave del servidor. Escribe:
+## 4. Conectarse al servidor
+
+Una vez copiada la clave pública, ya puedes conectarte por SSH:
+
+```bash
+ssh sshuser@IP_DEL_SERVIDOR
+```
+
+Ejemplo:
+
+```bash
+ssh sshuser@192.168.1.10
+```
+
+La primera vez que te conectes, SSH preguntará si deseas confiar en la huella del servidor. Escribe:
 
 ```bash
 yes
 ```
 
-## 3. Introducir la contraseña
+A partir de ese momento, si la autenticación por clave está bien configurada, podrás entrar sin necesidad de usar la contraseña del sistema remoto.
 
-Después, introduce la contraseña del usuario remoto.
+## 5. Finalizar la conexión
+
+Para cerrar la sesión SSH:
+
+```bash
+exit
+```
+
+Verás algo parecido a esto:
+
+```shell
+sshuser@server1:~$ exit
+logout
+Connection to 192.168.1.10 closed.
+```
 
 ---
 
-# Autenticación mediante claves
+# Endurecimiento opcional del servidor
 
-SSH también permite autenticarse mediante un par de claves: una **clave privada** y una **clave pública**.
+Una vez comprobado que el acceso mediante claves funciona correctamente, puedes aumentar la seguridad desactivando la autenticación por contraseña.
 
-## 1. Generar claves en el cliente
+Edita otra vez el archivo de configuración:
 
 ```bash
-ssh-keygen
+sudo nano /etc/ssh/sshd_config
 ```
 
-## 2. Copiar la clave pública al servidor
+Cambia esta directiva:
 
-```bash
-ssh-copy-id usuario@IP_DEL_SERVIDOR
+```text
+PasswordAuthentication no
 ```
 
-## 3. Conectarse sin contraseña
+Reinicia el servicio:
 
 ```bash
-ssh usuario@IP_DEL_SERVIDOR
+sudo systemctl restart ssh
+```
+
+A partir de ese momento, solo podrán conectarse usuarios que dispongan de una clave SSH válida.
+
+---
+
+# Método manual alternativo
+
+Si no quieres usar `ssh-copy-id`, puedes copiar manualmente la clave pública al servidor.
+
+## En el cliente
+
+Muestra el contenido de la clave pública:
+
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+
+## En el servidor
+
+Inicia sesión como `sshuser` y crea la estructura necesaria:
+
+```bash
+mkdir -p ~/.ssh
+nano ~/.ssh/authorized_keys
+```
+
+Pega dentro el contenido de la clave pública y guarda el archivo.
+
+Después, ajusta los permisos:
+
+```bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
 ```
 
 ---
