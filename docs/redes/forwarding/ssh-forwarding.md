@@ -92,7 +92,7 @@ PasswordAuthentication yes
 > Se recomienda dejar `PasswordAuthentication yes` durante la configuración inicial y cambiarlo a `no` después de comprobar que la conexión con claves funciona correctamente.
 
 <figure>
-  <img src="/2024/redes/img/sshconfig.png" alt="sshconfig" width="320" />
+  <img src="/redes/img/sshconfig.png" alt="sshconfig" width="320" />
 </figure>
 
 ## 5. Reiniciar el servicio
@@ -118,10 +118,13 @@ ip a
 Anota la dirección IP de **server1**, ya que la necesitarás desde el cliente.
 
 <figure>
-  <img src="/2024/redes/img/ipa.png" alt="Dirección IP del servidor" width="320" />
+  <img src="/redes/img/ipa.png" alt="Dirección IP del servidor" width="320" />
 </figure>
+   
 
 ---
+    
+    
 
 # Pautas en el cliente
 
@@ -155,7 +158,7 @@ El resultado será la creación de dos archivos en `~/.ssh/`:
 > La **clave pública** es la que se copia al servidor.
 
 <figure>
-  <img src="/2024/redes/img/sshconfig2.png" alt="Generación de claves SSH" width="450" />
+  <img src="/redes/img/sshconfig2.png" alt="Generación de claves SSH" width="450" />
 </figure>
 
 ## 2. Comprobar los archivos generados
