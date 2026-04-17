@@ -27,21 +27,10 @@ Su importancia radica en que protege la información transmitida, como credencia
   <img src="/redes/img/autenticacionssh.png" alt="Esquema de autenticación SSH" width="520" />
 </figure>
 
-## Máquina servidor
 
-La máquina identificada como **server1** será la destinada a recibir las conexiones. En ella instalaremos y configuraremos el servidor SSH.
+## Pautas en el servidor
 
-## Máquina cliente
-
-La máquina **server2** será el cliente desde el que nos conectaremos remotamente a **server1**.
-
----
-
-# Pautas en el servidor
-
-Realiza estas operaciones en **server1**.
-
-## 1. Instalar OpenSSH Server
+### 1. Instalar OpenSSH Server
 
 Utiliza el gestor de paquetes para instalar el servidor SSH:
 
@@ -50,13 +39,13 @@ sudo apt update
 sudo apt install openssh-server -y
 ```
 
-## 2. Comprobar el estado del servicio
+### 2. Comprobar el estado del servicio
 
 ```bash
 sudo systemctl status ssh
 ```
 
-## 3. Crear un usuario para la conexión SSH
+### 3. Crear un usuario para la conexión SSH
 
 En lugar de permitir el acceso remoto como `root`, es preferible crear un usuario específico para la conexión SSH.
 
@@ -65,7 +54,7 @@ sudo adduser sshuser
 sudo usermod -aG sudo sshuser
 ```
 
-## 4. Editar la configuración del servidor SSH
+### 4. Editar la configuración del servidor SSH
 
 Edita el archivo de configuración:
 
@@ -79,7 +68,7 @@ Revisa al menos estas directivas:
 Port 22
 PermitRootLogin no
 PubkeyAuthentication yes
-PasswordAuthentication yes
+PasswordAuthentication no
 ```
 
 ### Explicación rápida
@@ -87,21 +76,19 @@ PasswordAuthentication yes
 - **Port**: el puerto por defecto de SSH es el **22**.
 - **PermitRootLogin no**: deshabilita el acceso remoto directo como `root`.
 - **PubkeyAuthentication yes**: permite autenticarse mediante claves públicas.
-- **PasswordAuthentication yes**: permite autenticación por contraseña al principio.
-
-> Se recomienda dejar `PasswordAuthentication yes` durante la configuración inicial y cambiarlo a `no` después de comprobar que la conexión con claves funciona correctamente.
+- **PasswordAuthentication no**: deniegae autenticación por contraseña 
 
 <figure>
   <img src="/redes/img/sshconfig.png" alt="sshconfig" width="320" />
 </figure>
 
-## 5. Reiniciar el servicio
+### 5. Reiniciar el servicio
 
 ```bash
 sudo systemctl restart ssh
 ```
 
-## 6. Configurar el cortafuegos
+### 6. Configurar el cortafuegos
 
 Si estás usando `ufw`, abre el puerto SSH:
 
@@ -109,7 +96,7 @@ Si estás usando `ufw`, abre el puerto SSH:
 sudo ufw allow ssh
 ```
 
-## 7. Comprobar la dirección IP del servidor
+### 7. Comprobar la dirección IP del servidor
 
 ```bash
 ip a
@@ -126,11 +113,11 @@ Anota la dirección IP de **server1**, ya que la necesitarás desde el cliente.
     
     
 
-# Pautas en el cliente
+## Pautas en el cliente
 
-Realiza estas operaciones en **server2**.
+Realiza estas operaciones en **cliente**.
 
-## 1. Generar el par de claves SSH
+### 1. Generar el par de claves SSH
 
 La forma correcta de trabajar con autenticación por clave es **generar las claves en el cliente**, no en el servidor.
 
@@ -161,11 +148,11 @@ El resultado será la creación de dos archivos en `~/.ssh/`:
   <img src="/redes/img/sshconfig2.png" alt="Generación de claves SSH" width="450" />
 </figure>
 
-## 2. Comprobar los archivos generados
+### 2. Comprobar los archivos generados
 
 ```bash
 cd ~/.ssh
-ls -la
+ls
 ```
 
 Verás algo parecido a esto:
@@ -177,45 +164,39 @@ drwxr-x--- 3 alumno alumno 4096 Mar 20 10:43 ..
 -rw-r--r-- 1 alumno alumno  743 Mar 20 10:44 id_rsa.pub
 ```
 
-## 3. Copiar la clave pública al servidor
+### 3. Copiar la clave pública al servidor
 
-Utiliza este comando para copiar la clave pública del cliente al usuario `sshuser` del servidor:
+### En el servidor
 
-```bash
-ssh-copy-id sshuser@IP_DEL_SERVIDOR
-```
-
-Ejemplo:
+Inicia sesión como `sshuser` y crea la estructura necesaria:
 
 ```bash
-ssh-copy-id sshuser@192.168.1.10
+mkdir -p ~/.ssh
+nano ~/.ssh/authorized_keys
 ```
 
-Este comando añade automáticamente la clave pública al archivo `~/.ssh/authorized_keys` del servidor.
+Pega dentro el contenido de la clave pública (`id_rsa.pub`) y guarda el archivo.
 
-## 4. Conectarse al servidor
-
-Una vez copiada la clave pública, ya puedes conectarte por SSH:
+Después, ajusta los permisos:
 
 ```bash
-ssh sshuser@IP_DEL_SERVIDOR
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
 ```
 
-Ejemplo:
+---
 
-```bash
-ssh sshuser@192.168.1.10
+Añade la clave pública al archivo `~/.ssh/authorized_keys` del servidor.
+
+### 4. Conectarse al servidor
+
+Una vez copiada la clave pública, ya puedes conectarte por SSH (ejecuta desde donde se encuentre tu clave privada):
+
+```shell
+ssh -i "id_rsa" sshuser@IPSERVIDOR
 ```
 
-La primera vez que te conectes, SSH preguntará si deseas confiar en la huella del servidor. Escribe:
-
-```bash
-yes
-```
-
-A partir de ese momento, si la autenticación por clave está bien configurada, podrás entrar sin necesidad de usar la contraseña del sistema remoto.
-
-## 5. Finalizar la conexión
+### 5. Finalizar la conexión
 
 Para cerrar la sesión SSH:
 
@@ -233,67 +214,11 @@ Connection to 192.168.1.10 closed.
 
 ---
 
-# Endurecimiento opcional del servidor
 
-Una vez comprobado que el acceso mediante claves funciona correctamente, puedes aumentar la seguridad desactivando la autenticación por contraseña.
 
-Edita otra vez el archivo de configuración:
+## Redirecciones en SSH
 
-```bash
-sudo nano /etc/ssh/sshd_config
-```
-
-Cambia esta directiva:
-
-```text
-PasswordAuthentication no
-```
-
-Reinicia el servicio:
-
-```bash
-sudo systemctl restart ssh
-```
-
-A partir de ese momento, solo podrán conectarse usuarios que dispongan de una clave SSH válida.
-
----
-
-# Método manual alternativo
-
-Si no quieres usar `ssh-copy-id`, puedes copiar manualmente la clave pública al servidor.
-
-## En el cliente
-
-Muestra el contenido de la clave pública:
-
-```bash
-cat ~/.ssh/id_rsa.pub
-```
-
-## En el servidor
-
-Inicia sesión como `sshuser` y crea la estructura necesaria:
-
-```bash
-mkdir -p ~/.ssh
-nano ~/.ssh/authorized_keys
-```
-
-Pega dentro el contenido de la clave pública y guarda el archivo.
-
-Después, ajusta los permisos:
-
-```bash
-chmod 700 ~/.ssh
-chmod 600 ~/.ssh/authorized_keys
-```
-
----
-
-# Redirecciones en SSH
-
-## ¿Qué es una redirección SSH?
+### ¿Qué es una redirección SSH?
 
 Una **redirección SSH** o **túnel SSH** permite enviar tráfico de red a través de una conexión segura SSH, redirigiendo puertos desde el equipo local al remoto o viceversa.
 
@@ -303,13 +228,13 @@ Se utiliza, por ejemplo, para:
 - cifrar conexiones,
 - o alcanzar equipos que no son accesibles directamente desde el exterior.
 
-## Ejemplo práctico
+### Ejemplo práctico
 
 ```shell
 ssh -i "C:\Users\rafa\.ssh\id_rsa_damx" -p 30000 damx@mvs.sytes.net -L 4444:127.0.0.1:3389 -L 4449:192.160.51.149:5432
 ```
 
-## ¿Qué hace este comando?
+### ¿Qué hace este comando?
 
 Se conecta a `mvs.sytes.net` por el puerto `30000` como usuario `damx`, usando la clave privada `id_rsa_damx`.
 
@@ -337,9 +262,9 @@ localhost:4449
 
 ---
 
-# Conexiones SSH y NAT
+## Conexiones SSH y NAT
 
-## Ideas clave
+### Ideas clave
 
 - El puerto por defecto de SSH es el **22**.
 - Un equipo puede conectarse por SSH a otro equipo de su misma red sin necesidad de NAT.
@@ -348,7 +273,7 @@ localhost:4449
 
 ---
 
-# Ejercicios
+## Ejercicios
 
 Responde a las siguientes preguntas sobre el esquema de red facilitado.
 
@@ -356,28 +281,28 @@ Responde a las siguientes preguntas sobre el esquema de red facilitado.
   <img src="/redes/img/forwarding_ejemplo1.png" alt="Forwarding ejemplo 1" width="300" />
 </figure>
 
-## Pregunta 1
+### Pregunta 1
 
 **EQ3** accede por SSH a **EQ4**.  
 ¿Hace falta redirección NAT?
 
 ---
 
-## Pregunta 2
+### Pregunta 2
 
 **EQ3** accede por SSH a **EQ6** (en otra red).  
 ¿Hace falta redirección NAT?
 
 ---
 
-## Pregunta 3
+### Pregunta 3
 
 Desde fuera de la red (**Internet**) se quiere acceder por SSH a **EQ2** y **EQ4**.  
 ¿Hace falta redirección NAT?
 
 ---
 
-## Pregunta 4
+### Pregunta 4
 
 **EQ3** quiere conectarse por SSH a **EQ4** (`192.168.20.13`).  
 ¿Qué comando usaría?
@@ -389,14 +314,14 @@ D) `ssh -p 22 usuario@172.16.0.201`
 
 ---
 
-## Pregunta 5
+### Pregunta 5
 
 Desde Internet, un usuario quiere acceder por SSH a **EQ2**.  
 ¿Qué configuración NAT debe aplicarse en **Router3** y **Router1**?
 
 ---
 
-## Pregunta 6
+### Pregunta 6
 
 ¿Por qué se necesita cambiar el puerto externo (por ejemplo, `2223`) cuando varios equipos ofrecen SSH en redes privadas?
 

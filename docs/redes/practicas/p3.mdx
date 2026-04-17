@@ -1,156 +1,619 @@
 ---
 sidebar_position: 3
-title: Práctica 3. Configuración de un contenedor LXC con IP estática y acceso remoto mediante SSH y SFTP
+title: Práctica 3. Configuración de la red LAN2, equipos de la red y acceso remoto mediante SSH
 ---
 
-# Práctica 3. Configuración de un contenedor LXC con IP estática y acceso remoto mediante SSH y SFTP
+# Práctica 3. Configuración de la red LAN2, equipos de la red y acceso remoto mediante SSH
 
-## 1. Título
-Configuración de un contenedor LXC en Proxmox con direccionamiento IP estático y acceso remoto seguro mediante SSH y SFTP.
+## 1. Enunciado
+
+En esta práctica se configurará una nueva red en **OpenWRT**, junto con su servicio **DHCP**, y posteriormente se configurarán los equipos conectados a dicha red tanto mediante **DHCP** como mediante **IP estática**.
+
+Para ello se trabajará con dos tipos de sistemas:
+
+- un **contenedor LXC**, cuya configuración de red se realizará desde la **interfaz gráfica de Proxmox**;
+- una **máquina virtual Ubuntu**, cuya configuración se realizará desde línea de comandos mediante **Netplan**.
+
+Una vez configurados los equipos en red, se comprobará su conectividad y se preparará el acceso remoto mediante **SSH**, incluyendo autenticación por claves y una breve introducción a las redirecciones SSH.
+
+---
 
 ## 2. Resultado de aprendizaje y criterios de evaluación
 
 ### RA5. Interconecta sistemas en red configurando dispositivos y protocolos
+
 - **f)** Se han gestionado puertos de comunicaciones.
 - **g)** Se ha verificado el funcionamiento de la red mediante el uso de comandos y herramientas básicas.
 - **h)** Se han aplicado protocolos seguros de comunicaciones.
 
 ### RA6. Opera sistemas en red gestionando sus recursos e identificando las restricciones de seguridad existentes
+
 - **d)** Se ha accedido a los servidores utilizando técnicas de conexión remota.
 
+---
+
 ## 3. Objetivos de la práctica
-- Crear o utilizar un contenedor LXC en Proxmox.
-- Configurar una dirección IP estática en el contenedor.
-- Verificar la conectividad entre el equipo cliente y el contenedor.
-- Instalar, activar o comprobar el servicio SSH.
-- Acceder al contenedor de forma remota mediante SSH.
-- Transferir archivos de forma segura mediante SFTP o SCP.
-- Comprobar el puerto de escucha del servicio SSH.
+
+Al finalizar la práctica, el alumnado deberá ser capaz de:
+
+- Crear y configurar una red **LAN2** en OpenWRT.
+- Configurar el servicio **DHCP** de dicha red.
+- Configurar la conectividad de un contenedor **LXC** mediante **DHCP** e **IP estática**.
+- Configurar la conectividad de una **máquina virtual Ubuntu** mediante **Netplan**, tanto por DHCP como con IP estática.
+- Verificar la configuración de red utilizando comandos básicos como `ip a`, `ip route` y `ping`.
+- Instalar, activar o comprobar el servicio **SSH**.
+- Acceder de forma remota a una máquina mediante **SSH**.
+- Transferir archivos de forma segura mediante **SFTP** o **SCP**.
+- Comprobar la autenticación mediante claves públicas y privadas.
+- Entender el uso básico de las **redirecciones SSH**.
+
+---
 
 ## 4. Recursos necesarios
-- Servidor Proxmox.
-- Un contenedor LXC con sistema Linux.
-- Un equipo cliente Linux o Windows con acceso por red al contenedor.
-- Acceso a terminal en el cliente y en el contenedor.
-- Red correctamente operativa.
-- Credenciales del usuario del contenedor.
 
-## 5. Direccionamiento propuesto
-El profesor indicará la red que se debe utilizar. Un ejemplo válido sería:
+- 1 router **OpenWRT**.
+- 1 contenedor **LXC** en Proxmox.
+- 1 máquina virtual **Ubuntu** en Proxmox.
+- Acceso a **Proxmox**.
+- Acceso a la administración de **OpenWRT**.
+- Acceso a terminal en cliente, contenedor y máquina virtual.
+- Documento o memoria para recoger evidencias.
 
-- Red: `10.0.0.0/24`
-- Puerta de enlace: `10.0.0.1`
-- IP del contenedor LXC: `10.0.0.20`
-- Equipo cliente: `10.0.0.30`
+---
+
+## 5. Comandos básicos que se utilizarán
+
+Durante la práctica se usarán, como mínimo, los siguientes comandos:
+
+```bash
+ip a
+ip route
+ping 8.8.8.8
+```
+
+También pueden utilizarse, cuando sea necesario, los siguientes:
+
+```bash
+systemctl status ssh
+ss -tuln
+scp archivo.txt usuario@ip:/ruta/
+sftp usuario@ip
+```
+
+---
 
 ## 6. Desarrollo de la práctica
 
-### Parte 1. Comprobación o creación del contenedor
-1. Accede a Proxmox.
-2. Localiza el contenedor asignado o crea uno nuevo si el profesor lo indica.
-3. Comprueba que el contenedor está iniciado.
-4. Identifica su interfaz de red.
+## Parte 1. Crear la red LAN2 para el adaptador de red disponible en tu router OpenWRT
 
-### Parte 2. Configuración IP estática
-1. Configura la IP estática del contenedor según los datos proporcionados.
-2. Configura la máscara de red.
-3. Configura la puerta de enlace.
-4. Si procede, configura también el servidor DNS.
-5. Reinicia la red o el contenedor si es necesario.
+1. Accede a **Network > Interfaces**.
+2. Pulsa en **Add new interface**.
+3. Crea una nueva interfaz con estas características:
+   - **Nombre**: `LAN2`
+   - **Protocolo**: `Static address`
+   - **Dispositivo**: `eth2`
 
-Ejemplo orientativo en sistemas Debian/Ubuntu:
+4. Configura una red privada dentro de los rangos permitidos, utilizando una máscara **/23**.
+
+   La dirección IP de la interfaz **LAN2** deberá ser la **primera dirección IP válida** de la red elegida.
+
+   Además, la red deberá incluir el número de tu identificador.  
+   Por ejemplo, si eres `dam40`, la red deberá contener el número **40** en el tercer o cuarto octeto.
+
+(CAPTURA 1) Configuración de la interfaz LAN2 con dirección IP y máscara.
+
+5. Accede a la pestaña **DHCP Server** y pulsa en **Set up DHCP Server**.
+6. Configura un rango válido de direcciones IP para el servicio DHCP dentro de esa red.
+
+(CAPTURA 2) Configuración del rango DHCP.
+
+7. Guarda y aplica los cambios.
+8. Comprueba en la página de **Interfaces** que la nueva interfaz **LAN2** ha quedado creada y activa.
+9. Ve a **Network > Firewall** y configura la interfaz **LAN2** para que tenga salida a Internet, asociándola a una zona adecuada o creando la regla o zona necesaria.
+10. Guarda y aplica los cambios.
+11. Comprueba en el apartado **Zones** del firewall que la configuración se ha aplicado correctamente.
+
+(CAPTURA 3) Configuración de la zona o regla del firewall para LAN2.
+
+---
+
+## Parte 2. Configurar la conexión del adaptador de red del contenedor LXC (`ubuntu-damxx`)
+
+:::note Credenciales
+**Usuario:** `root`  
+**Contraseña:** `12345`
+:::
+
+1. Entra en **Proxmox** y selecciona el contenedor `ubuntu-damxx`.
+2. En el apartado **Network**, localiza sus adaptadores de red.
+
+Ten en cuenta lo siguiente:
+
+- **`vmbr2damxx`** es el adaptador asociado a la red **LAN2** que acabas de crear.
+- **`vmbr_damxx`** es el adaptador conectado a la red LAN principal del router.
+
+### 2.1. Configuración por DHCP
+
+3. Configura uno de los adaptadores en modo **DHCP** desde la interfaz gráfica de Proxmox.
+4. Reinicia el contenedor con el siguiente comando:
+
+```bash
+reboot now
+```
+
+5. Accede a la consola del contenedor y realiza las siguientes comprobaciones:
+
 ```bash
 ip a
 ip route
+ping 8.8.8.8
 ```
 
-### Parte 3. Verificación de conectividad
-Desde el contenedor:
+6. Repite el proceso con el otro adaptador, también en modo **DHCP**.
+7. Al cambiar de adaptador, reinicia el contenedor con `reboot now`.
+8. Realiza de nuevo las tres comprobaciones anteriores.
+
+(CAPTURA 4) Comprobación en el contenedor funcionando por DHCP, mostrando `ip a`, `ip route` y `ping 8.8.8.8`.
+
+### 2.2. Configuración con IP estática en el contenedor
+
+9. Configura ahora cada adaptador manualmente con una **IP estática** desde la interfaz gráfica de Proxmox.
+10. Para cada red, asigna al contenedor la **última dirección IP válida** del rango correspondiente.
+11. Reinicia el contenedor tras cada cambio:
+
+```bash
+reboot now
+```
+
+12. Comprueba de nuevo:
+
 ```bash
 ip a
 ip route
-ping 10.0.0.1
+ping 8.8.8.8
 ```
 
-Desde el equipo cliente:
+13. Explica qué dirección IP se ha configurado, qué puerta de enlace utiliza y si la conectividad funciona correctamente.
+
+(CAPTURA 5) Comprobación en el contenedor funcionando con IP estática, mostrando `ip a`, `ip route` y `ping 8.8.8.8`.
+
+---
+
+## Parte 3. Configurar la conexión del adaptador de red de la máquina virtual (`vm-damxx`)
+
+:::note Credenciales
+**Usuario:** `ubuntu`  
+**Contraseña:** `12345`
+:::
+
+1. Entra en **Proxmox** y selecciona la máquina virtual `vm-damxx`.
+2. En el apartado **Hardware > Network Device** comprueba qué adaptador de red tiene conectado.
+3. Pulsa sobre la opción **>_ Console** en la parte superior para abrir la consola.
+4. Espera unos segundos hasta que conecte.  
+   Si no conecta correctamente, apaga y vuelve a encender la máquina virtual.
+5. Antes de modificar nada, ejecuta:
+
 ```bash
-ping 10.0.0.20
+ip a
 ```
 
-Comprobar:
-- que el contenedor responde a `ping`
-- que la puerta de enlace es accesible
-- que el equipo cliente alcanza al contenedor
+6. Identifica el nombre real del adaptador de red. Puede ser, por ejemplo, `ens18`.
 
-### Parte 4. Comprobación o instalación de SSH
-1. Verifica si el servicio SSH está instalado.
-2. Si no lo está, instálalo.
-3. Comprueba que el servicio está activo.
-4. Identifica el puerto en el que escucha.
+### 3.1. Configuración por DHCP con Netplan
 
-Comandos orientativos:
+7. Edita el archivo de configuración de Netplan:
+
 ```bash
-systemctl status ssh
-ss -tulpen | grep ssh
+sudo nano /etc/netplan/50-cloud-init.yaml
 ```
 
-Si fuera necesario instalarlo:
+8. Introduce una configuración como la siguiente, adaptando el nombre del interfaz:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    ens18:
+      dhcp4: true
+```
+
+9. Guarda los cambios y aplícalos:
+
+```bash
+sudo netplan apply
+```
+
+10. Comprueba el resultado con los tres comandos básicos:
+
+```bash
+ip a
+ip route
+ping 8.8.8.8
+```
+
+11. Repite el proceso para el otro adaptador de red disponible, si procede.
+
+(CAPTURA 6) Archivo Netplan en modo DHCP y comprobación con `ip a`, `ip route` y `ping 8.8.8.8`.
+
+### 3.2. Configuración con IP estática en la máquina virtual
+
+12. Vuelve a editar el archivo de Netplan:
+
+```bash
+sudo nano /etc/netplan/50-cloud-init.yaml
+```
+
+13. Configura ahora una **IP estática** utilizando la **penúltima dirección IP válida** de la red correspondiente.
+
+Ejemplo orientativo:
+
+```yaml
+network:
+  version: 2
+  ethernets:
+    ens18:
+      dhcp4: false
+      addresses:
+        - 192.168.1.253/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses:
+          - 192.168.1.1
+          - 8.8.8.8
+```
+
+14. Guarda los cambios y aplícalos:
+
+```bash
+sudo netplan apply
+```
+
+15. Realiza de nuevo las comprobaciones:
+
+```bash
+ip a
+ip route
+ping 8.8.8.8
+```
+
+16. Si `netplan apply` da problemas, prueba antes con:
+
+```bash
+sudo netplan try
+```
+
+(CAPTURA 7) Archivo Netplan con IP estática y comprobación con `ip a`, `ip route` y `ping 8.8.8.8`.
+
+---
+
+# 7. SSH y redirecciones SSH
+
+## 7.1. Descripción
+
+**SSH (Secure Shell)** es un protocolo de red que permite comunicarse de forma segura con otros dispositivos mediante una conexión cifrada. Se utiliza habitualmente para la administración remota de servidores y equipos de red.
+
+Su importancia radica en que protege la información transmitida, como credenciales, comandos o archivos, incluso cuando la comunicación viaja por redes no seguras.
+
+<figure>
+  <img src="/redes/img/ssh.jpg" alt="Esquema general de SSH" width="450" />
+</figure>
+
+## 7.2. Objetivos
+
+- Comprender el funcionamiento de SSH y su importancia en la seguridad de las comunicaciones.
+- Instalar y configurar un servidor SSH.
+- Permitir el acceso remoto a una máquina mediante autenticación segura.
+- Establecer una conexión SSH desde otra máquina.
+- Comprobar la autenticación mediante claves públicas y privadas.
+- Entender el uso de redirecciones o túneles SSH.
+
+<figure>
+  <img src="/redes/img/autenticacionssh.png" alt="Esquema de autenticación SSH" width="520" />
+</figure>
+
+## 7.3. Pautas en el servidor
+
+Estas operaciones deben realizarse en el equipo que actuará como **servidor SSH**. Puede ser el contenedor o la máquina virtual configurada en los apartados anteriores.
+
+### 1. Instalar OpenSSH Server
+
+Utiliza el gestor de paquetes para instalar el servidor SSH:
+
 ```bash
 sudo apt update
 sudo apt install openssh-server -y
-sudo systemctl enable ssh
-sudo systemctl start ssh
 ```
 
-### Parte 5. Acceso remoto mediante SSH
-Desde el equipo cliente, accede al contenedor:
+### 2. Comprobar el estado del servicio
+
 ```bash
-ssh usuario@10.0.0.20
+sudo systemctl status ssh
 ```
 
-Comprueba:
-- que la conexión se establece correctamente
-- que el usuario puede iniciar sesión
-- que el acceso se realiza mediante el puerto correcto
+### 3. Crear un usuario para la conexión SSH
 
-### Parte 6. Transferencia segura de archivos
-Realiza una transferencia de un archivo desde el cliente al contenedor o al revés.
+En lugar de permitir el acceso remoto como `root`, es preferible crear un usuario específico para la conexión SSH.
 
-Ejemplo con SCP:
 ```bash
-scp archivo.txt usuario@10.0.0.20:/home/usuario/
+sudo adduser sshuser
+sudo usermod -aG sudo sshuser
 ```
 
-Ejemplo con SFTP:
+### 4. Editar la configuración del servidor SSH
+
+Edita el archivo de configuración:
+
 ```bash
-sftp usuario@10.0.0.20
+sudo nano /etc/ssh/sshd_config
 ```
 
-Dentro de SFTP:
+Revisa al menos estas directivas:
+
+```text
+Port 22
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+```
+
+### Explicación rápida
+
+- **Port**: el puerto por defecto de SSH es el **22**.
+- **PermitRootLogin no**: deshabilita el acceso remoto directo como `root`.
+- **PubkeyAuthentication yes**: permite autenticarse mediante claves públicas.
+- **PasswordAuthentication no**: deniega la autenticación por contraseña.
+
+<figure>
+  <img src="/redes/img/sshconfig.png" alt="sshconfig" width="320" />
+</figure>
+
+### 5. Reiniciar el servicio
+
 ```bash
-put archivo.txt
-ls
+sudo systemctl restart ssh
+```
+
+### 6. Configurar el cortafuegos
+
+Si estás usando `ufw`, abre el puerto SSH:
+
+```bash
+sudo ufw allow ssh
+```
+
+### 7. Comprobar la dirección IP del servidor
+
+```bash
+ip a
+```
+
+Anota la dirección IP del servidor, ya que la necesitarás desde el cliente.
+
+<figure>
+  <img src="/redes/img/ipa.png" alt="Dirección IP del servidor" width="320" />
+</figure>
+
+### 8. Comprobar el puerto de escucha
+
+```bash
+ss -tuln
+```
+
+(CAPTURA 8) Instalación y configuración básica del servidor SSH, mostrando el estado del servicio, la IP y el puerto de escucha.
+
+---
+
+## 7.4. Pautas en el cliente
+
+Realiza estas operaciones en el equipo que actuará como **cliente**.
+
+### 1. Generar el par de claves SSH
+
+La forma correcta de trabajar con autenticación por clave es **generar las claves en el cliente**, no en el servidor.
+
+```bash
+ssh-keygen -t rsa -b 4096
+```
+
+### ¿Qué hace este comando?
+
+- **ssh-keygen**: genera un par de claves SSH.
+- **-t rsa**: indica que se utilizará el algoritmo RSA.
+- **-b 4096**: indica el tamaño de la clave.
+
+Durante el proceso, se te pedirá:
+
+- el nombre del archivo donde guardar la clave;
+- una frase de paso opcional para aumentar la seguridad.
+
+El resultado será la creación de dos archivos en `~/.ssh/`:
+
+- **id_rsa** → clave privada
+- **id_rsa.pub** → clave pública
+
+> La **clave privada nunca debe compartirse**.  
+> La **clave pública** es la que se copia al servidor.
+
+<figure>
+  <img src="/redes/img/sshconfig2.png" alt="Generación de claves SSH" width="450" />
+</figure>
+
+### 2. Comprobar los archivos generados
+
+```bash
+cd ~/.ssh
+ls -l
+```
+
+Verás algo parecido a esto:
+
+```text
+drwx------ 2 alumno alumno 4096 Mar 20 10:44 .
+drwxr-x--- 3 alumno alumno 4096 Mar 20 10:43 ..
+-rw------- 1 alumno alumno 3381 Mar 20 10:44 id_rsa
+-rw-r--r-- 1 alumno alumno  743 Mar 20 10:44 id_rsa.pub
+```
+
+(CAPTURA 9) Generación del par de claves SSH y comprobación del contenido de `~/.ssh`.
+
+### 3. Copiar la clave pública al servidor
+
+#### En el servidor
+
+Inicia sesión como `sshuser` y crea la estructura necesaria:
+
+```bash
+mkdir -p ~/.ssh
+nano ~/.ssh/authorized_keys
+```
+
+Pega dentro el contenido de la clave pública (`id_rsa.pub`) y guarda el archivo.
+
+Después, ajusta los permisos:
+
+```bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+```
+
+### 4. Conectarse al servidor
+
+Una vez copiada la clave pública, ya puedes conectarte por SSH desde el cliente:
+
+```bash
+ssh -i "id_rsa" sshuser@IP_SERVIDOR
+```
+
+(CAPTURA 10) Conexión SSH correcta al servidor mediante autenticación por clave.
+
+### 5. Transferir archivos mediante SCP o SFTP
+
+Ejemplo con **SCP**:
+
+```bash
+scp archivo.txt sshuser@IP_SERVIDOR:/home/sshuser/
+```
+
+Ejemplo con **SFTP**:
+
+```bash
+sftp sshuser@IP_SERVIDOR
+```
+
+### 6. Finalizar la conexión
+
+Para cerrar la sesión SSH:
+
+```bash
 exit
 ```
 
-### Parte 7. Comprobación final
-Responde y demuestra:
-1. Qué IP tiene el contenedor.
-2. Qué puerta de enlace utiliza.
-3. Qué puerto usa el servicio SSH.
-4. Qué comando has utilizado para conectarte.
-5. Qué comando has utilizado para transferir archivos.
-6. Qué comprobaciones has realizado para verificar que todo funciona.
+Verás algo parecido a esto:
 
-## 7. Evidencias que debe entregar el alumnado
-La entrega debe incluir, como mínimo:
+```text
+sshuser@server1:~$ exit
+logout
+Connection to 192.168.1.10 closed.
+```
 
-- Captura de la configuración IP del contenedor.
-- Captura o salida de `ip a`.
-- Captura o salida de `ip route`.
-- Captura de `ping` exitoso entre cliente y contenedor.
-- Captura del estado del servicio SSH.
-- Captura o salida de `ss -tulpen | grep ssh`.
-- Captura del acceso por SSH.
-- Captura de la transferencia realizada por SFTP o SCP.
-- Respuesta breve a las preguntas finales.
+(CAPTURA 11) Transferencia de archivos mediante SCP o SFTP, o finalización correcta de la sesión SSH.
+
+---
+
+## 7.5. Redirecciones SSH básicas
+
+Además del acceso remoto, SSH permite crear **túneles** o **redirecciones** para transportar tráfico de forma segura.
+
+### Redirección local
+
+Permite acceder desde el equipo cliente a un servicio remoto a través de un puerto local.
+
+Ejemplo:
+
+```bash
+ssh -L 8080:127.0.0.1:80 sshuser@IP_SERVIDOR
+```
+
+Interpretación:
+- el puerto **8080** del cliente se redirige al puerto **80** del servidor;
+- después se podría acceder desde el navegador del cliente a `http://localhost:8080`.
+
+### Redirección remota
+
+Permite publicar en el servidor un puerto que redirige hacia un servicio del cliente.
+
+Ejemplo:
+
+```bash
+ssh -R 9090:127.0.0.1:80 sshuser@IP_SERVIDOR
+```
+
+### Redirección dinámica
+
+Permite crear un proxy SOCKS.
+
+Ejemplo:
+
+```bash
+ssh -D 1080 sshuser@IP_SERVIDOR
+```
+
+:::warning
+En esta práctica no es obligatorio dominar en profundidad todos los tipos de túneles, pero sí conviene entender que **SSH no solo sirve para abrir una terminal remota**, sino también para **redirigir tráfico de manera segura**.
+:::
+
+No es necesario aportar captura de esta parte salvo que el profesorado la solicite expresamente.
+
+---
+
+## 8. Entrega
+
+La entrega deberá realizarse en forma de **memoria técnica** bien estructurada.
+
+### La memoria deberá incluir como mínimo
+
+- portada;
+- índice de contenidos;
+- índice de figuras;
+- descripción de la red **LAN2** creada en OpenWRT;
+- capturas de la configuración DHCP;
+- pruebas de funcionamiento del contenedor por **DHCP** e **IP estática**;
+- pruebas de funcionamiento de la máquina virtual por **DHCP** e **IP estática**;
+- comprobaciones realizadas con `ip a`, `ip route` y `ping 8.8.8.8`;
+- instalación y configuración del servicio **SSH**;
+- evidencias de autenticación mediante claves;
+- prueba de conexión remota por **SSH**;
+- prueba de transferencia de archivos por **SCP** o **SFTP**;
+- conclusiones finales.
+
+### Formato recomendado
+
+- **Archivo final**: PDF
+- **Tamaño de página**: A4
+- **Fuente**: Arial, Calibri o similar
+- **Tamaño de letra**: 11 o 12 pt
+- **Interlineado**: 1,15 o 1,5
+- **Márgenes**: normales
+- **Paginación**: obligatoria
+- **Capturas**: numeradas, comentadas e integradas en el texto
+
+:::tip
+No se debe entregar una simple colección de capturas.  
+Cada evidencia debe ir acompañada de una breve explicación que indique **qué se ha hecho**, **qué resultado se ha obtenido** y **por qué ese resultado es correcto**.
+:::
+
+---
+
+## 9. Observaciones importantes
+
+- Antes de aplicar una IP estática, asegúrate de que pertenece a la red correcta.
+- Verifica que la **puerta de enlace** configurada sea la IP del router en esa red.
+- Si cambias el adaptador de red en Proxmox, reinicia el sistema antes de hacer las comprobaciones.
+- En Ubuntu, revisa siempre el nombre real de la interfaz antes de editar Netplan.
+- Si `netplan apply` da problemas, prueba antes con `sudo netplan try`.
+- Si el archivo de Netplan está gestionado por `cloud-init`, comprueba que no se sobrescriba la configuración tras reiniciar.
+- No compartas la **clave privada** SSH con otros usuarios.
+
+---
