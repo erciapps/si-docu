@@ -6,8 +6,7 @@ title: Práctica 2. Configuración de VLANs, puertos access y trunk
 
 # Práctica 2. Configuración de VLANs, puertos access y trunk
 
-## 1. Título
-**Configuración de VLANs en switch Cisco y conexión mediante trunk a un router OpenWRT**
+## 1. Configuración de VLANs en switch Cisco y conexión mediante trunk a un router OpenWRT
 <figure>
   <img src="/redes/img/vlans/esquema1.png" alt="esquema1" width="500" />
   <br/>
@@ -51,28 +50,9 @@ Al finalizar la práctica, el alumnado deberá ser capaz de:
 - Acceso de administración al router OpenWRT.
 - Hoja o documento para recoger evidencias.
 
-## 6. Escenario propuesto
+## 6. Tareas a realizar
 
-Se trabajará con dos VLANs:
-
-- **VLAN 21**: Administración (ya configurada)
-- **VLAN 20**
-- **VLAN 30**
-- **VLAN 40**
-- **VLAN 50**
-
-Direccionamiento sugerido:
-
-- **VLAN 10** → red `192.168.10.0/24`
-- **VLAN 20** → red `192.168.20.0/24`
-
-Ejemplo de asignación:
-- Router OpenWRT VLAN 10: `192.168.10.1`
-- Router OpenWRT VLAN 20: `192.168.20.1`
-- Equipo 1 en VLAN 10: `192.168.10.10`
-- Equipo 2 en VLAN 20: `192.168.20.10`
-
-## 7. Tareas a realizar
+A partir de las VLANs y redes asignadas 
 
 ### Parte 1. Configuración VLANs en router
 1. Entra en **Network > Interfaces**, pestaña **Devices** y pulsa **Configurar** en **br-lan**
@@ -128,6 +108,7 @@ No te olvidesde de confiturar el servidor **DHCP**
   <br/>
 </figure>
 
+(REALIZAR CAPTURA)
 
 9. Añade las VLANs creadas para que tengan acceso a internet.   
 Para ello puedes añadirlas a la zona LAN que ya dispones.
@@ -155,7 +136,7 @@ Aplica los cambios.
 </figure>
 
 :::info
-REALIZA LA SEPARACIÓN DE AL MENOS 2 VLANS Y REALIZA LAS CAPTURAS PARA AÑADIRLAS A LA MEMORIA
+REALIZA LA SEPARACIÓN DE AL MENOS 2 VLANS Y **REALIZA LAS CAPTURAS PARA AÑADIRLAS A LA MEMORIA**
 :::
 
 ### Parte 2. Creación de VLANs en el switch Cisco
@@ -169,13 +150,13 @@ ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no -o KexAlgori
 
 La contraseña es: `Clase12345`
 
-2. Ver el estado de la configuración:
+##2. Ver el estado de la configuración:
 ```
 show vlan brief
 show interfaces trunk
 ```
 
-3. Asigna un nombre identificativo a cada VLAN.
+##3. Asigna un nombre identificativo a cada VLAN.
 
 
 ```
@@ -199,7 +180,7 @@ vlan 999
 exit
 
 ```
-4. Configuración de los puertos
+##4. Configuración de los puertos
 
 ```
 
@@ -241,7 +222,7 @@ wr
 
 
 
-5. Verificación y Configuración de los equipos
+##5. Verificación y Configuración de los equipos
 Vuelve a ejecutar los comandos para verificar el estado de los puertos:
 ```
 show vlan brief
@@ -261,7 +242,56 @@ Realiza pruebas con comandos:
 
 ### Configura el equipo con SO Windows para conectarse a un puerto trunk. (CAPTURAS de los pasos)
 
-6. Cuestiones finales
+
+
+## 6. Devolver switch a su estado original
+
+Ejecutar los siguientes comandos:
+:::danger
+AJUSTA LOS TAGs DE TUS VLANS!!
+:::
+
+```Shell
+enable
+conf t
+
+! Devolver los puertos 2-24 a estado por defecto
+default interface range fastEthernet0/2 - 24
+
+! Asegurar que queden en modo access VLAN 1
+interface range fastEthernet0/2 - 24
+ switchport mode access
+ switchport access vlan 1
+ no shutdown
+exit
+
+! Mantener el puerto 1 para administración en VLAN 21
+interface fastEthernet0/1
+ switchport mode access
+ switchport access vlan 21
+ no shutdown
+exit
+
+! Borrar las VLAN que creaste
+no vlan 10
+no vlan 20
+no vlan 30
+no vlan 40
+
+end
+write memory
+
+```
+
+Puedes comprobar que todo queda igual que al inicio:
+
+```Shell
+show vlan brief
+show interfaces trunk
+show ip interface brief
+```
+
+## 7. Cuestiones finales
 Responde brevemente en la memoria:
 
 1. ¿Qué función cumple una VLAN?
@@ -269,3 +299,6 @@ Responde brevemente en la memoria:
 3. ¿Por qué dos equipos conectados al mismo switch pueden quedar separados?
 4. ¿Qué ocurriría si un puerto de usuario se configurase por error como trunk?
 5. ¿Qué ventajas aporta la segmentación mediante VLANs?
+
+## 8. Entrega final
+- Memoria con las cuestiones y las capturas propuestas, comentadas, y númeradas siguiendo los mismos criterios y diseño que en las anteriores memorias.
