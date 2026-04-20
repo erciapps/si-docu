@@ -8,6 +8,14 @@ title: Práctica 2. Configuración de VLANs, puertos access y trunk
 
 ## 1. Título
 **Configuración de VLANs en switch Cisco y conexión mediante trunk a un router OpenWRT**
+<figure>
+  <img src="/redes/img/vlans/esquema1.png" alt="esquema1" width="500" />
+  <br/>
+</figure>
+<figure>
+  <img src="/redes/img/vlans/esquema2.png" alt="esquema2" width="500" />
+  <br/>
+</figure>
 
 ## 2. Descripción de la práctica
 En esta práctica el alumnado trabajará la segmentación lógica de una red local mediante VLANs.  
@@ -47,8 +55,11 @@ Al finalizar la práctica, el alumnado deberá ser capaz de:
 
 Se trabajará con dos VLANs:
 
-- **VLAN 10**: Administración
-- **VLAN 20**: Usuarios
+- **VLAN 21**: Administración (ya configurada)
+- **VLAN 20**
+- **VLAN 30**
+- **VLAN 40**
+- **VLAN 50**
 
 Direccionamiento sugerido:
 
@@ -63,101 +74,198 @@ Ejemplo de asignación:
 
 ## 7. Tareas a realizar
 
-### Parte 1. Configuración física
-1. Conecta los equipos al switch Cisco.
-2. Conecta el switch al router OpenWRT mediante el puerto que se usará como **trunk**.
-3. Identifica qué puertos del switch se usarán para:
-   - Equipo de VLAN 10
-   - Equipo de VLAN 20
-   - Enlace trunk al router
+### Parte 1. Configuración VLANs en router
+1. Entra en **Network > Interfaces**, pestaña **Devices** y pulsa **Configurar** en **br-lan**
+
+<figure>
+  <img src="/redes/img/vlans/vlan1.png" alt="vlan1" width="500" />
+  <br/>
+</figure>
+
+2. Habilita **VLAN filtering**, y añade las 4 VLANs, indicando **Tagged**
+<figure>
+  <img src="/redes/img/vlans/vlan2.png" alt="vlan2" width="500" />
+  <br/>
+</figure>
+
+3. Dirígete a la pestaña **Interfaces**, y pulsa sobre **Add new interface**
+<figure>
+  <img src="/redes/img/vlans/vlan3.png" alt="vlan3" width="500" />
+  <br/>
+</figure>
+   
+
+4. Crea la primera interfaz con el nombre **vlan10**, **Static address** y selecciona el dispositivo **br-lan.10**
+<figure>
+  <img src="/redes/img/vlans/vlan4.png" alt="vlan4" width="500" />
+  <br/>
+</figure>
+
+5. Configura la IP para el router y la máscara de red acorde a la red diseñada.   
+No te olvidesde de confiturar el servidor **DHCP**
+<figure>
+  <img src="/redes/img/vlans/vlan5.png" alt="vlan5" width="500" />
+  <br/>
+</figure>
+
+
+6. La VLAN 10 se ha creado pero hay que confirmar los cambios.   
+<figure>
+  <img src="/redes/img/vlans/vlan6.png" alt="vlan6" width="500" />
+  <br/>
+</figure>
+
+7. Al aplicar los cambios se puede ver la configuración establecida
+<figure>
+  <img src="/redes/img/vlans/vlan7.png" alt="vlan7" width="500" />
+  <br/>
+</figure>
+
+
+8. Realiza la misma operación para el resto de VLANs
+<figure>
+  <img src="/redes/img/vlans/vlan8.png" alt="vlan8" width="500" />
+  <br/>
+</figure>
+
+
+9. Añade las VLANs creadas para que tengan acceso a internet.   
+Para ello puedes añadirlas a la zona LAN que ya dispones.
+:::warning
+Es importante destacar que esto permite ver a todos los equipos de todas las redes.   
+En caso de querer aislar las redes hay que crear 4 zonas distintas.
+:::
+<figure>
+  <img src="/redes/img/vlans/vlan9.png" alt="vlan9" width="500" />
+  <br/>
+</figure>
+
+10. Selecciona las redes creadas a la zona.   
+Aplica los cambios.
+<figure>
+  <img src="/redes/img/vlans/vlan10.png" alt="vlan10" width="500" />
+  <br/>
+</figure>
+
+
+11. Verifica en el apartado de interfaces que todas tienen el mismo color verde (esto indica que pertenecen a la misma zona)
+<figure>
+  <img src="/redes/img/vlans/vlan11.png" alt="vlan11" width="500" />
+  <br/>
+</figure>
+
+:::info
+REALIZA LA SEPARACIÓN DE AL MENOS 2 VLANS Y REALIZA LAS CAPTURAS PARA AÑADIRLAS A LA MEMORIA
+:::
 
 ### Parte 2. Creación de VLANs en el switch Cisco
-1. Accede al switch por consola o por el método indicado por el profesor.
-2. Crea las VLANs necesarias:
-   - VLAN 10
-   - VLAN 20
+1. Accede al switch por ssh mediante el siguiente comando:
+::: warning IP
+La IP será facilitada en clase dependiendo del grupo
+:::
+```Shell
+ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no -o KexAlgorithms=+diffie-hellman-group1-sha1 -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -o Ciphers=+3des-cbc -o MACs=+hmac-sha1 admin@IP
+```
+
+La contraseña es: `Clase12345`
+
+2. Ver el estado de la configuración:
+```
+show vlan brief
+show interfaces trunk
+```
+
 3. Asigna un nombre identificativo a cada VLAN.
 
-### Parte 3. Configuración de puertos access
-1. Configura el puerto del equipo 1 en modo **access**.
-2. Asócialo a la **VLAN 10**.
-3. Configura el puerto del equipo 2 en modo **access**.
-4. Asócialo a la **VLAN 20**.
 
-### Parte 4. Configuración del puerto trunk
-1. Selecciona el puerto del switch que conecta con OpenWRT.
-2. Configúralo en modo **trunk**.
-3. Permite el paso de las VLANs 10 y 20.
+```
+enable
+conf t
 
-### Parte 5. Configuración del router OpenWRT
-1. Accede a la administración de OpenWRT.
-2. Configura las interfaces necesarias para trabajar con las VLANs.
-3. Asigna una dirección IP a cada interfaz:
-   - VLAN 10 → `192.168.10.1/24`
-   - VLAN 20 → `192.168.20.1/24`
-4. Aplica los cambios.
+vlan 10
+ name VLAN10
+exit
+vlan 20
+ name VLAN20
+exit
+vlan 30
+ name VLAN30
+exit
+vlan 40
+ name VLAN40
+exit
+vlan 999
+ name VLAN_GESTION
+exit
 
-### Parte 6. Configuración de los equipos
-1. Configura manualmente la IP de cada equipo:
-   - Equipo en VLAN 10 → `192.168.10.10/24`
-   - Equipo en VLAN 20 → `192.168.20.10/24`
-2. Configura como puerta de enlace la dirección del router correspondiente a cada VLAN.
+```
+4. Configuración de los puertos
 
-### Parte 7. Verificación
-Realiza las siguientes comprobaciones:
+```
 
-1. Muestra la configuración del switch y verifica:
-   - VLANs creadas.
-   - Puertos access asignados correctamente.
-   - Puerto trunk activo.
 
-2. Comprueba desde cada equipo:
-   - Dirección IP configurada.
-   - Máscara aplicada.
-   - Puerta de enlace.
+interface fastEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40
+ switchport nonegotiate
+exit
 
-3. Realiza pruebas con comandos:
+interface range FastEthernet0/3 - 12
+ description Alumnos VLAN10
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+exit
+
+interface range FastEthernet0/13 - 22
+ description Alumnos VLAN20
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+exit
+
+interface range FastEthernet0/23 - 24
+ description Trunk salida VLAN30 y VLAN40
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 30,40
+ switchport nonegotiate
+exit
+
+end
+wr
+```
+
+
+
+5. Verificación y Configuración de los equipos
+Vuelve a ejecutar los comandos para verificar el estado de los puertos:
+```
+show vlan brief
+show interfaces trunk
+```
+(CAPTURA SALIDA)
+
+Comprueba cada una de las redes desde un equipo, verificando su salida a internet y el funcionamiento del DHCP
+Realiza pruebas con comandos:
    - `ip a` o `ipconfig`
    - `ping`
    - `traceroute` o `tracert` si procede
+(NECESARIO CAPTURAS DE PANTALLA    
+- Dirección IP configurada.
+   - Máscara aplicada.
+   - Puerta de enlace.)
 
-4. Comprueba:
-   - Si cada equipo alcanza su puerta de enlace.
-   - Si existe o no comunicación directa entre equipos de VLAN distinta.
-   - Si el comportamiento coincide con lo esperado.
+### Configura el equipo con SO Windows para conectarse a un puerto trunk. (CAPTURAS de los pasos)
 
-### Parte 8. Cuestiones finales
-Responde brevemente:
+6. Cuestiones finales
+Responde brevemente en la memoria:
 
 1. ¿Qué función cumple una VLAN?
 2. ¿Qué diferencia hay entre un puerto access y un puerto trunk?
 3. ¿Por qué dos equipos conectados al mismo switch pueden quedar separados?
 4. ¿Qué ocurriría si un puerto de usuario se configurase por error como trunk?
 5. ¿Qué ventajas aporta la segmentación mediante VLANs?
-
-## 8. Evidencias que debe entregar el alumnado
-La entrega debe incluir:
-
-- Captura o transcripción de la creación de las VLANs.
-- Captura o transcripción de la configuración de los puertos access.
-- Captura o transcripción de la configuración del trunk.
-- Capturas de la configuración IP de cada equipo.
-- Capturas de los comandos de verificación.
-- Respuesta a las cuestiones finales.
-- Esquema simple de la red utilizada.
-
-## 9. Criterios de corrección
-Se valorará:
-- La correcta creación de las VLANs.
-- La correcta configuración de puertos access y trunk.
-- El uso adecuado del router como elemento de interconexión.
-- La correcta configuración IP de los equipos.
-- La verificación razonada del funcionamiento de la red.
-- La claridad de las evidencias presentadas.
-
-## 10. Ampliación opcional
-Como ampliación, se puede añadir:
-- Una tercera VLAN.
-- Reglas en OpenWRT para permitir o bloquear tráfico entre VLANs.
-- Asignación de direcciones por DHCP diferenciadas por VLAN.
-- Prueba de acceso a un servicio ubicado en una VLAN concreta.
