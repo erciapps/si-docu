@@ -151,14 +151,23 @@ docker compose up -d
 ## 4. Dependencias Python
 Para generar el archivo `requirements.txt`, crear un entorno virtual y activarlo, y ejecutar el siguiente comando:
 
+1. Crear entorno virtual
 ```
-# 1. Crear entorno virtual
 python3 -m venv venv-auth
-# 2. Activarlo
+```
+
+2. Activarlo
+```
 source venv-auth/bin/activate
-# 3. Instala las dependencias
+```
+
+3. Instala las dependencias
+```
 pip install flask python-dotenv psycopg2-binary
-# 4. Crea el requirements.txt
+```
+
+4. Crea el requirements.txt
+```
 pip freeze > requirements.txt
 ```
 
