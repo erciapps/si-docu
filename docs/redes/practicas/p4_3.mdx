@@ -12,6 +12,21 @@ Si el usuario puede entrar directamente a:
 
 ```text
 http://IP_DEL_SERVIDOR:8080/vistas/carrito.jsp
+````
+
+entonces se saltaría Nginx Proxy Manager y también se saltaría Flask.
+
+La idea correcta es:
+````
+Usuario -> java.damx.es -> Nginx Proxy Manager -> Tomcat
+````
+No:
+
+````
+Usuario -> IP:8080 -> Tomcat
+````
+
+:::
 
 ## 1. Objetivo de la práctica
 
