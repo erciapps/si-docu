@@ -1,0 +1,577 @@
+---
+sidebar_position: 5
+title: Práctica 4 Parte II. Login con Flask, sesiones y PostgreSQL
+---
+
+# Práctica 4 Parte II. Login con Flask, sesiones y PostgreSQL
+Descarga el proyecto base desde aquí:
+
+[https://gitercilla.erciapps.home.arpa/damx/flash-auth.git](https://gitercilla.erciapps.home.arpa/damx/flash-auth.git)
+
+## Objetivo de esta primera parte
+
+El objetivo no es montar todavía el reverse proxy. Antes conviene que el alumnado entienda una pieza más pequeña:
+
+```text
+Navegador -> Flask -> PostgreSQL
+```
+
+En esta fase vamos a preparar:
+
+1. Un contenedor Flask.
+2. Un contenedor PostgreSQL.
+3. Un formulario de registro.
+4. Un formulario de login.
+5. Una sesión de usuario en Flask.
+6. Roles básicos: `admin` y `cliente`.
+7. Un endpoint `/auth/verify` preparado para usarlo más adelante con Nginx Proxy Manager.
+
+La parte del reverse proxy se incorporará después.
+
+---
+
+## 1. Estructura del proyecto
+
+La estructura mínima será:
+
+```text
+flask-auth/
+├── app.py
+├── docker-compose.yml
+├── requirements.txt
+├── .env
+├── db/
+│   └── init.sql
+└── templates/
+    ├── login.html
+    └── formulario.html
+```
+
+---
+
+## 2. Variables de entorno
+
+Archivo `.env`:
+
+```env
+USUARIO=admin
+PASSWD=admin123
+SECRET=cambia_esta_clave_por_una_muy_larga_y_aleatoria
+
+POSTGRES_DB=authdb
+POSTGRES_USER=authuser
+POSTGRES_PASSWORD=authpass
+DB_HOST=db-users
+DB_PORT=5432
+```
+
+Aquí hay dos tipos de datos:
+
+```text
+USUARIO / PASSWD / SECRET -> configuración de Flask
+POSTGRES_* / DB_*         -> configuración de PostgreSQL
+```
+
+El usuario definido en `.env` será el administrador inicial de la aplicación.
+
+---
+
+## 3. Docker Compose
+
+Archivo `docker-compose.yml`:
+
+```yaml
+services:
+  flaskapp:
+    image: python:3.12-slim-bookworm
+    working_dir: /app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "8787:8888"
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    restart: unless-stopped
+    networks:
+      - proxy
+      - proyectoweb_default
+
+  db-users:
+    image: postgres:16
+    env_file:
+      - .env
+    ports:
+      - "9335:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    networks:
+      - proyectoweb_default
+
+volumes:
+  postgres_data:
+
+networks:
+  proxy:
+    external: true
+
+  proyectoweb_default:
+    external: true
+
+```
+
+Puntos importantes para explicar:
+
+```text
+flaskapp  -> ejecuta la aplicación Python.
+db-users  -> ejecuta PostgreSQL.
+8787:8888 -> el puerto 8888 del contenedor Flask se publica como 8787 en el host.
+9335:5432 -> el puerto 5432 del contenedor PostgreSQL se publica como 9335 en el host.
+```
+
+La línea:
+
+```yaml
+- ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+```
+
+hace que PostgreSQL ejecute el script `init.sql` la primera vez que se crea la base de datos.
+
+Si la base de datos ya existe, ese script no se vuelve a ejecutar automáticamente. Para empezar desde cero:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+---
+
+## 4. Dependencias Python
+Para generar el archivo `requirements.txt`, crear un entorno virtual y activarlo, y ejecutar el siguiente comando:
+
+```
+# 1. Crear entorno virtual
+python3 -m venv venv-auth
+# 2. Activarlo
+source venv-auth/bin/activate
+# 3. Instala las dependencias
+pip install flask python-dotenv psycopg2-binary
+# 4. Crea el requirements.txt
+pip freeze > requirements.txt
+```
+
+Al menos debe disponer de las siguientes dependencias:
+```text
+Flask==3.0.3
+python-dotenv==1.0.1
+psycopg2-binary==2.9.9
+```
+
+Qué hace cada dependencia:
+
+```text
+Flask          -> framework web.
+python-dotenv  -> carga variables desde .env.
+psycopg2       -> permite conectar con PostgreSQL.
+```
+
+---
+
+## 5. Base de datos y funciones SQL
+
+Archivo `db/init.sql`:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS usuarios (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    correo VARCHAR(150) NOT NULL UNIQUE,
+    passwd VARCHAR(255) NOT NULL
+);
+
+CREATE OR REPLACE FUNCTION registrar_usuario(
+    _nombre VARCHAR,
+    _correo VARCHAR,
+    _passwd VARCHAR
+)
+RETURNS BOOLEAN
+AS $$
+BEGIN
+    INSERT INTO usuarios(nombre, correo, passwd)
+    VALUES (_nombre, _correo, crypt(_passwd, gen_salt('bf')));
+
+    RETURN TRUE;
+EXCEPTION
+    WHEN unique_violation THEN
+        RETURN FALSE;
+    WHEN others THEN
+        RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION login_usuario(
+    _login VARCHAR,
+    _passwd VARCHAR
+)
+RETURNS BOOLEAN
+AS $$
+DECLARE
+    v_passwd_almacenada VARCHAR(255);
+BEGIN
+    SELECT passwd INTO v_passwd_almacenada
+    FROM usuarios
+    WHERE correo = _login OR nombre = _login;
+
+    IF NOT FOUND THEN
+        RETURN FALSE;
+    END IF;
+
+    IF crypt(_passwd, v_passwd_almacenada) = v_passwd_almacenada THEN
+        RETURN TRUE;
+    END IF;
+
+    RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+La extensión `pgcrypto` permite usar funciones como `crypt()` y `gen_salt()`.
+
+La contraseña no se guarda en texto plano. Se guarda cifrada/hash mediante:
+
+```sql
+crypt(_passwd, gen_salt('bf'))
+```
+
+Luego, para comprobar el login, no se compara la contraseña directamente. Se hace:
+
+```sql
+crypt(_passwd, v_passwd_almacenada) = v_passwd_almacenada
+```
+
+Eso permite verificar si la contraseña introducida coincide con la almacenada.
+
+---
+
+## 6. Código Flask mínimo
+
+La aplicación Flask tendrá estas rutas:
+
+```text
+/login        -> muestra y procesa el login.
+/logout       -> cierra sesión.
+/form         -> muestra formulario de registro.
+/registro     -> registra usuarios en PostgreSQL.
+/             -> página privada de prueba.
+/auth/verify  -> endpoint preparado para Nginx Proxy Manager.
+```
+
+La conexión con PostgreSQL se hace con:
+
+```python
+def get_conn():
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST", "db-users"),
+        port=os.getenv("DB_PORT", "5432"),
+        dbname=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
+    )
+```
+
+El login contra la base de datos se hace llamando a la función SQL:
+
+```python
+def login_usuario(user, passwd):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT login_usuario(%s, %s);", (user, passwd))
+            return cur.fetchone()[0]
+```
+
+El registro se hace igual:
+
+```python
+def registrar_usuario(nombre, correo, passwd):
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT registrar_usuario(%s, %s, %s);",
+                (nombre, correo, passwd),
+            )
+            return cur.fetchone()[0]
+```
+
+---
+
+## 7. Sesiones y roles
+
+Cuando el login es correcto, se guarda información en la sesión:
+
+```python
+session.permanent = True
+session["login"] = True
+session["user"] = user
+session["roles"] = ["admin"]
+```
+
+Para usuarios registrados en PostgreSQL usamos:
+
+```python
+session["roles"] = ["cliente"]
+```
+
+La diferencia es:
+
+```text
+admin   -> usuario especial definido en .env.
+cliente -> usuario registrado en base de datos.
+```
+
+---
+
+## 8. Decorador `login_requerido`
+
+El decorador permite proteger rutas propias de Flask:
+
+```python
+def login_requerido(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not session.get("login"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+
+    return wrapper
+```
+
+Se usa así:
+
+```python
+@app.route("/")
+@login_requerido
+def index():
+    return "Página privada"
+```
+
+Si el usuario no está logueado, se le redirige a `/login`.
+
+---
+
+## 9. Plantilla de login
+
+Archivo `templates/login.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+
+    <h1>Login</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <form method="post" action="/login">
+        <input type="hidden" name="next" value="{{ next_url }}">
+
+        <label>Usuario o correo:</label>
+        <input type="text" name="user" required>
+
+        <br><br>
+
+        <label>Contraseña:</label>
+        <input type="password" name="passwd" required>
+
+        <br><br>
+
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p><a href="/form">Registrar usuario</a></p>
+
+</body>
+</html>
+```
+
+El campo oculto `next` sirve para recordar a qué URL quería ir el usuario antes de iniciar sesión.
+
+---
+
+## 10. Plantilla de registro
+
+Archivo `templates/formulario.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+</head>
+<body>
+    <h1>Formulario de registro</h1>
+
+    <form action="/registro" method="post">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" id="nombre" required>
+        <br><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" id="email" required>
+        <br><br>
+
+        <label>Contraseña:</label>
+        <input type="password" name="passwd" id="passwd" required>
+        <br><br>
+
+        <button type="submit">Registrar</button>
+    </form>
+
+    <p><a href="/login">Volver al login</a></p>
+</body>
+</html>
+```
+
+---
+
+## 11. Endpoint `/auth/verify`
+
+Aunque el reverse proxy se verá después, dejamos preparada esta ruta:
+
+```python
+@app.route("/auth/verify")
+def auth_verify():
+    if not session.get("login"):
+        return "", 401
+
+    roles_usuario = session.get("roles", [])
+    roles_requeridos = request.headers.get("X-Required-Roles", "").strip()
+
+    if not roles_requeridos:
+        return "", 204
+
+    lista_roles_requeridos = [
+        rol.strip()
+        for rol in roles_requeridos.split(",")
+        if rol.strip()
+    ]
+
+    for rol in lista_roles_requeridos:
+        if rol in roles_usuario:
+            return "", 204
+
+    return "", 403
+```
+
+La idea para la fase posterior será:
+
+```text
+Nginx Proxy Manager pregunta a Flask:
+¿este usuario puede entrar a esta ruta?
+
+Flask responde:
+204 -> permitido
+401 -> no logueado
+403 -> logueado, pero sin permisos
+```
+
+De momento solo nos interesa que el login funcione y que las sesiones guarden correctamente los roles.
+
+---
+
+## 12. Arrancar el proyecto
+
+Desde la carpeta del proyecto:
+
+```bash
+docker compose up -d
+```
+
+Ver contenedores:
+
+```bash
+docker ps
+```
+
+Ver logs de Flask:
+
+```bash
+docker logs -f flask-auth-base-flaskapp-1
+```
+
+El nombre del contenedor puede variar según la carpeta. Si no coincide, usa:
+
+```bash
+docker ps
+```
+
+---
+
+## 13. Pruebas básicas
+
+Abrir:
+
+```text
+http://localhost:8787/login
+```
+
+Entrar como administrador:
+
+```text
+Usuario: admin
+Contraseña: admin123
+```
+
+Luego registrar un usuario:
+
+```text
+http://localhost:8787/form
+```
+
+Ejemplo:
+
+```text
+Nombre: rafa
+Email: rafa@example.com
+Contraseña: 1234
+```
+
+Después iniciar sesión con:
+
+```text
+Usuario: rafa
+Contraseña: 1234
+```
+
+El usuario `rafa` tendrá rol:
+
+```text
+cliente
+```
+
+---
+
+## 14. Reiniciar la base de datos desde cero
+
+Si se quiere borrar todo y volver a crear la base:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+El `-v` elimina el volumen de PostgreSQL, por lo que también borra usuarios registrados.
+
+---
+

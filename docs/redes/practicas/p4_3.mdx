@@ -1,0 +1,467 @@
+---
+sidebar_position: 6
+---
+
+# Práctica 4 Parte III — Proteger rutas con Nginx Proxy Manager y Flask
+
+:::warning Importante
+
+La aplicación Tomcat no debe ser accesible directamente desde fuera por su puerto interno.
+
+Si el usuario puede entrar directamente a:
+
+```text
+http://IP_DEL_SERVIDOR:8080/vistas/carrito.jsp
+
+## 1. Objetivo de la práctica
+
+En esta práctica vamos a usar **Nginx Proxy Manager** como reverse proxy y un servicio **Flask** como servidor central de autenticación.
+
+La idea es que Nginx Proxy Manager no gestione usuarios directamente. En su lugar, antes de dejar pasar a una ruta protegida, preguntará a Flask:
+
+> ¿Este usuario está autenticado y tiene el rol necesario?
+
+Si Flask responde:
+
+| Respuesta de Flask | Significado |
+|---|---|
+| `204` | Acceso permitido |
+| `401` | Usuario no autenticado |
+| `403` | Usuario autenticado, pero sin permisos |
+
+---
+
+## 2. Esquema general
+
+```text
+Navegador
+   |
+   |  http://java.damx.es/vistas/carrito.jsp
+   v
+Nginx Proxy Manager
+   |
+   |-- consulta interna --> Flask /auth/verify
+   |                        ¿tiene sesión? ¿tiene rol?
+   |
+   |<-- 204 / 401 / 403
+   |
+   v
+Tomcat / JSP
+```
+
+En esta práctica trabajaremos con tres servicios:
+
+```text
+Nginx Proxy Manager  -> reverse proxy
+Flask                -> login y autorización
+Tomcat               -> aplicación Java/JSP
+```
+
+---
+
+## 3. Requisitos previos
+
+Antes de empezar, deben funcionar estas partes:
+
+1. La aplicación Flask debe estar arrancada.
+2. La aplicación Tomcat/JSP debe estar arrancada.
+3. Nginx Proxy Manager debe poder llegar a Flask y a Tomcat.
+4. Los contenedores deben compartir una red Docker común.
+
+Ejemplo de nombres usados en esta práctica:
+
+```text
+Flask:   flask-auth-flaskapp-1:8888
+Tomcat:  proyectoweb-tomcat-1:8080
+Dominio: java.damx.es
+```
+
+Si tus contenedores tienen otros nombres, tendrás que cambiarlos en la configuración.
+
+---
+
+## 4. Comprobar que Nginx Proxy Manager ve los contenedores
+
+Debes verificar que todos los contenedores esten en la misma red (`proxy`)
+
+---
+
+## 5. Configurar el Proxy Host principal
+
+En Nginx Proxy Manager:
+
+```text
+Proxy Hosts -> Add Proxy Host
+```
+
+En la pestaña **Details**:
+
+```text
+Domain Names: java.damx.es
+Scheme: http
+Forward Hostname / IP: proyectoweb-tomcat-1
+Forward Port: 8080
+Access List: Publicly Accessible
+```
+
+Guarda.
+
+Ahora prueba:
+
+```text
+http://java.damx.es/
+```
+
+Debe cargar la aplicación Tomcat/JSP.
+
+Si aparece la pantalla:
+
+```text
+Congratulations! You've successfully started the Nginx Proxy Manager.
+```
+
+significa que Nginx Proxy Manager no está encontrando el proxy host para ese dominio.
+
+---
+
+## 6. Crear rutas públicas para login y logout
+
+El login no debe ir a Tomcat, sino a Flask.
+
+En el proxy host `java.damx.es`, entra en **Custom Locations** y añade:
+
+### Ruta `/login`
+
+```text
+Location: /login
+Scheme: http
+Forward Hostname / IP: flask-auth-flaskapp-1
+Forward Port: 8888
+```
+
+La caja de configuración personalizada se deja vacía.
+
+### Ruta `/logout`
+
+```text
+Location: /logout
+Scheme: http
+Forward Hostname / IP: flask-auth-flaskapp-1
+Forward Port: 8888
+```
+
+La caja de configuración personalizada se deja vacía.
+
+Con esto:
+
+```text
+http://java.damx.es/login
+http://java.damx.es/logout
+```
+
+serán atendidas por Flask.
+
+---
+
+## 7. Configuración avanzada de Nginx Proxy Manager
+
+Ahora vamos a crear rutas internas que Nginx usará para preguntar a Flask.
+
+En el proxy host `java.damx.es`, entra en la pestaña de la rueda, **Advanced**, y pega:
+
+```nginx
+location = /_flask_auth_admin {
+    internal;
+
+    proxy_pass http://flask-auth-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+
+    proxy_set_header X-Required-Roles "admin";
+
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+
+location = /_flask_auth_cliente {
+    internal;
+
+    proxy_pass http://flask-auth-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+
+    proxy_set_header X-Required-Roles "cliente";
+
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+
+location = /_flask_auth_admin_cliente {
+    internal;
+
+    proxy_pass http://flask-auth-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+
+    proxy_set_header X-Required-Roles "admin,cliente";
+
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+
+location = /_flask_auth_login {
+    internal;
+
+    proxy_pass http://flask-auth-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+
+    proxy_set_header X-Required-Roles "";
+
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+
+location @login_redirect {
+    return 302 /login?next=$request_uri;
+}
+
+location @forbidden {
+    return 403;
+}
+```
+
+### Explicación rápida
+
+```nginx
+location = /_flask_auth_admin
+```
+
+Crea una ruta interna de Nginx. El usuario no puede entrar directamente a ella porque lleva:
+
+```nginx
+internal;
+```
+
+Esta línea llama a Flask:
+
+```nginx
+proxy_pass http://flask-auth-flaskapp-1:8888/auth/verify;
+```
+
+Esta línea indica qué rol se exige:
+
+```nginx
+proxy_set_header X-Required-Roles "admin";
+```
+
+Flask leerá esa cabecera y decidirá si el usuario puede pasar.
+
+---
+
+## 8. Proteger una ruta JSP concreta
+
+Vamos a proteger:
+
+```text
+http://java.damx.es/vistas/carrito.jsp
+```
+
+En **Custom Locations**, añade:
+
+```text
+Location: /vistas/carrito.jsp
+Scheme: http
+Forward Hostname / IP: proyectoweb-tomcat-1
+Forward Port: 8080
+```
+
+En la caja grande de configuración personalizada:
+
+```nginx
+auth_request /_flask_auth_admin;
+error_page 401 = @login_redirect;
+error_page 403 = @forbidden;
+```
+
+Esto significa:
+
+```text
+/vistas/carrito.jsp -> requiere rol admin
+```
+
+---
+
+## 9. Proteger una ruta para cliente
+
+Para proteger una ruta que solo puede ver un usuario con rol `cliente`:
+
+```nginx
+auth_request /_flask_auth_cliente;
+error_page 401 = @login_redirect;
+error_page 403 = @forbidden;
+```
+
+---
+
+## 10. Proteger una ruta para admin o cliente
+
+Para permitir tanto `admin` como `cliente`:
+
+```nginx
+auth_request /_flask_auth_admin_cliente;
+error_page 401 = @login_redirect;
+error_page 403 = @forbidden;
+```
+
+---
+
+## 11. Proteger una ruta solo con login
+
+Si no quieres exigir un rol concreto, solo que el usuario esté autenticado:
+
+```nginx
+auth_request /_flask_auth_login;
+error_page 401 = @login_redirect;
+error_page 403 = @forbidden;
+```
+
+---
+
+## 12. Qué debe hacer Flask
+
+Flask debe tener este endpoint:
+
+```python
+@app.route("/auth/verify")
+def auth_verify():
+    if not session.get("login"):
+        return "", 401
+
+    roles_usuario = session.get("roles", [])
+
+    if isinstance(roles_usuario, str):
+        roles_usuario = [roles_usuario]
+
+    roles_requeridos = request.headers.get("X-Required-Roles", "").strip()
+
+    if not roles_requeridos:
+        return "", 204
+
+    lista_roles_requeridos = [
+        rol.strip()
+        for rol in roles_requeridos.split(",")
+        if rol.strip()
+    ]
+
+    for rol in lista_roles_requeridos:
+        if rol in roles_usuario:
+            return "", 204
+
+    return "", 403
+```
+
+Flask no necesita saber si la ruta es:
+
+```text
+/vistas/carrito.jsp
+/vistas/insertar.jsp
+/ProductoControlador
+```
+
+Eso lo decide Nginx Proxy Manager.
+
+Flask solo sabe esto:
+
+```text
+¿El usuario está logueado?
+¿Tiene alguno de los roles pedidos por Nginx?
+```
+
+---
+
+## 13. Flujo completo de prueba
+
+Primero cerramos sesión:
+
+```text
+http://java.damx.es/logout
+```
+
+Luego intentamos entrar a:
+
+```text
+http://java.damx.es/vistas/carrito.jsp
+```
+
+Como no hay sesión, Flask devuelve:
+
+```text
+401
+```
+
+Nginx redirige a:
+
+```text
+/login?next=/vistas/carrito.jsp
+```
+
+Después hacemos login.
+
+Si el usuario tiene rol `admin`, entrará.
+
+Si el usuario tiene rol `cliente`, recibirá:
+
+```text
+403 Forbidden
+```
+
+---
+
+## 14. Logs de depuración en Flask
+
+Para ver qué está pasando, podemos mirar los logs:
+
+```bash
+docker logs -f flask-auth-flaskapp-1
+```
+
+Ejemplo correcto si `rafa` es cliente e intenta entrar a una ruta de admin:
+
+```text
+AUTH usuario: rafa
+AUTH roles_usuario: ['cliente']
+AUTH roles_requeridos: admin
+AUTH uri: /vistas/carrito.jsp
+AUTH denegado
+```
+
+---
