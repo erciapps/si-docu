@@ -1,0 +1,507 @@
+---
+sidebar_position: 7
+---
+import ReactPlayer from 'react-player'
+
+# Práctica 4 ENUNCIADO — Proteger rutas con Nginx Proxy Manager y Flask
+
+## Objetivo
+
+1. Clonar el repositorio Git proporcionado.
+2. Levantar los servicios necesarios del proyecto.
+3. Configurar el dominio `practica4.dam` en el archivo `hosts`.
+4. Configurar el reverse proxy escuchando en el puerto `83`.
+5. Redirigir cada ruta al servicio correspondiente.
+6. Proteger las rutas necesarias mediante comprobación de autenticación.
+7. Configurar correctamente las rutas estáticas:
+   - `/CSS`
+   - `/static`
+8. Verificar que las páginas cargan con su diseño correspondiente.
+9. Comprobar el comportamiento con:
+   - usuario no autenticado.
+   - usuario autenticado con rol de empleado.
+   - usuario autenticado con rol de administrador.
+
+
+En esta práctica se entrega un proyecto ya desarrollado que integra tres tecnologías web diferentes:
+
+- **Java / JSP**, desplegado en Tomcat.
+- **Python / Flask**, encargado de la autenticación y algunas rutas protegidas.
+- **PHP**, con una zona privada protegida mediante el sistema de autenticación común.
+
+El objetivo principal de la práctica no es programar estas aplicaciones, sino **configurar correctamente un reverse proxy** que permita acceder a todas ellas desde un único punto de entrada.
+
+El dominio local que se utilizará será:
+
+```text
+practica4.dam
+```
+
+Como el puerto `80` puede estar ocupado en el equipo, el reverse proxy deberá escuchar en el puerto:
+
+```text
+83
+```
+
+Por tanto, la aplicación deberá ser accesible desde:
+
+```text
+http://practica4.dam:83
+```
+
+---
+
+## 2. Material proporcionado
+
+Enlace a repositorio Git con el proyecto base:
+
+```text
+https://gitercilla.erciapps.home.arpa/damx/practica4.git
+```
+
+El proyecto incluye los servicios necesarios para ejecutar las aplicaciones Java, Flask y PHP, pero será necesario configurar correctamente el reverse proxy para que todas las rutas funcionen desde el mismo dominio.   
+
+---
+
+## 3. Objetivo de la práctica
+
+Configurar un **reverse proxy** que actúe como punto único de entrada al sistema y redirija cada petición al servicio correspondiente.
+
+La ruta principal `/` deberá apuntar a la aplicación **Java/JSP**.
+
+Desde esa aplicación se podrá navegar hacia rutas gestionadas por Flask o PHP, manteniendo siempre una experiencia de navegación coherente.
+
+---
+
+## 4. Configuración del dominio local
+
+Antes de probar el proyecto, se deberá añadir una entrada en el archivo `hosts` del sistema operativo.
+
+En Linux:
+
+```bash
+sudo nano /etc/hosts
+```
+
+Añadir:
+
+```text
+127.0.0.1 practica4.dam
+```
+
+En Windows, el archivo se encuentra normalmente en:
+
+```text
+C:\Windows\System32\drivers\etc\hosts
+```
+
+Y se añadirá igualmente:
+
+```text
+127.0.0.1 practica4.dam
+```
+
+---
+
+## 5. Requisitos funcionales del reverse proxy
+
+El reverse proxy debe cumplir los siguientes requisitos.
+
+### 5.1. Punto de entrada principal
+
+La ruta raíz debe enviar las peticiones a la aplicación Java:
+
+```text
+/
+```
+
+Ejemplo de acceso:
+
+```text
+http://practica4.dam:83/
+```
+
+Esta ruta debe cargar correctamente la aplicación JSP principal.
+
+---
+
+### 5.2. Rutas de autenticación en Flask
+
+Las siguientes rutas deben enviarse a la aplicación Flask:
+
+```text
+/login
+/logout
+/registro
+/403
+```
+
+La ruta `/login` debe permitir iniciar sesión.
+
+La ruta `/logout` debe cerrar la sesión.
+
+La ruta `/registro` debe permitir registrar usuarios si el proyecto lo contempla.
+
+La ruta `/403` mostrará una página de acceso denegado.
+
+La ruta `/auth/verify` será utilizada internamente por el reverse proxy para comprobar si un usuario tiene sesión iniciada y si posee el rol necesario.
+
+---
+
+### 5.3. Rutas protegidas
+
+Algunas rutas estarán protegidas mediante autenticación.
+
+Por ejemplo:
+
+```text
+/protegida
+```
+
+o rutas JSP protegidas como:
+
+```text
+/vistas/protegida_admin.jsp
+/vistas/protegida_empleado.jsp
+```
+
+El reverse proxy deberá comprobar, antes de permitir el acceso, si el usuario está autenticado y si tiene el rol correspondiente.
+
+Si el usuario no ha iniciado sesión, deberá ser redirigido a:
+
+```text
+/login
+```
+
+Si el usuario ha iniciado sesión pero no tiene permisos suficientes, deberá mostrarse la página:
+
+```text
+/403
+```
+
+---
+
+### 5.4. Ruta PHP
+
+La aplicación PHP deberá quedar accesible desde la ruta que se indique en el proyecto, por ejemplo:
+
+```text
+/privada
+```
+
+Esta ruta también podrá estar protegida mediante autenticación y rol.
+
+---
+
+## 6. Atención especial a las rutas estáticas
+
+Uno de los puntos más importantes de la práctica es configurar correctamente las rutas de archivos estáticos.
+
+Al trabajar con varias tecnologías detrás de un único dominio, pueden aparecer errores si el navegador intenta cargar archivos CSS, JavaScript o imágenes desde una ruta incorrecta.
+
+Se deberá prestar especial atención a rutas como:
+
+```text
+/CSS
+/static
+```
+
+### 6.1. Ruta `/CSS`
+
+Si la aplicación Java utiliza estilos desde una carpeta como:
+
+```text
+/CSS
+```
+
+el reverse proxy debe enviar esa ruta al servicio Java/Tomcat.
+
+Por ejemplo:
+
+```text
+/CSS/estilos.css
+```
+
+debe llegar correctamente a la aplicación Java.
+
+Si esta ruta no se configura bien, la página principal puede cargar sin estilos.
+
+---
+
+### 6.2. Ruta `/static`
+
+Flask utiliza habitualmente la ruta:
+
+```text
+/static
+```
+
+para servir archivos CSS, JavaScript o imágenes.
+
+Por tanto, esta ruta debe enviarse al servicio Flask.
+
+Por ejemplo:
+
+```text
+/static/css/style.css
+```
+
+debe cargar correctamente desde Flask.
+
+Si esta ruta no se configura bien, las páginas de login, registro, error 403 o vistas protegidas de Flask pueden aparecer sin diseño.
+
+---
+
+## 7. Tabla orientativa de rutas
+
+La configuración final deberá respetar una estructura similar a la siguiente:
+
+| Ruta | Servicio destino | Descripción |
+|---|---|---|
+| `/` | Java / Tomcat | Página principal del proyecto |
+| `/CSS` | PHP | Estilos de la aplicación PHP |
+| `/login` | Flask | Inicio de sesión |
+| `/logout` | Flask | Cierre de sesión |
+| `/registro` | Flask | Registro de usuarios |
+| `/403` | Flask | Página de acceso denegado |
+| `/static` | Flask | Archivos estáticos de Flask |
+| `/protegida` | Flask | Vista protegida de Flask |
+| `/privada` | PHP | Zona privada PHP |
+| `/vistas/protegida_admin.jsp` | Java / Tomcat | Vista JSP protegida para administrador |
+| `/vistas/protegida_empleado.jsp` | Java / Tomcat | Vista JSP protegida para empleado |
+
+La tabla puede variar ligeramente según la estructura final del proyecto, pero el alumnado deberá justificar cualquier cambio.
+
+---
+
+
+## 8. Pruebas mínimas obligatorias
+
+Comprobar, como mínimo, los siguientes casos:
+
+### Prueba 1: acceso a la página principal
+
+Acceder a:
+
+```text
+http://practica4.dam:83/
+```
+
+Resultado esperado:
+
+- Se muestra la aplicación Java/JSP.
+- Se cargan correctamente los estilos CSS.
+
+---
+
+### Prueba 2: acceso al login
+
+Acceder a:
+
+```text
+http://practica4.dam:83/login
+```
+
+Resultado esperado:
+
+- Se muestra la página de login de Flask.
+- Se cargan correctamente los estilos de Flask.
+
+---
+
+### Prueba 3: acceso a ruta protegida sin sesión
+
+Acceder sin iniciar sesión a:
+
+```text
+http://practica4.dam:83/protegida
+```
+
+Resultado esperado:
+
+- El usuario es redirigido a `/login`.
+- No aparece error de conexión reiniciada.
+- No aparece error 502, 404 o página sin diseño.
+
+---
+
+### Prueba 4: acceso con usuario sin permisos
+
+Iniciar sesión con un usuario sin rol de administrador e intentar acceder a una ruta solo para administradores.
+
+Resultado esperado:
+
+- Se muestra la página `/403`.
+- La página mantiene la estética del proyecto.
+
+---
+
+### Prueba 5: acceso con usuario administrador
+
+Iniciar sesión con usuario administrador y acceder a las rutas protegidas.
+
+Resultado esperado:
+
+- El acceso se permite correctamente.
+- Se muestran los datos o la vista correspondiente.
+- Los botones de navegación funcionan correctamente.
+
+---
+
+### Prueba 6: carga de recursos estáticos
+
+Comprobar en las herramientas de desarrollador del navegador que no hay errores `404` en rutas como:
+
+```text
+/CSS/...
+/static/...
+```
+
+Resultado esperado:
+
+- No hay errores al cargar CSS, JS o imágenes.
+- Las páginas mantienen el diseño visual esperado.
+
+---
+
+## Ayuda
+### 1. Clona el repositorio en tu directorio de trabajo
+```
+cd ~
+git clone https://gitercilla.erciapps.home.arpa/damx/practica4.git
+```
+### 2. Accede a la carpeta y levanta el servicio docker
+```shell
+cd practica4
+docker compose up -d --build
+```
+
+### 3. Comprobar el stack en portainer
+<figure>
+  <img src="/redes/img/stack_p4.png" alt="stack práctica 4" width="500" />
+  <br/>
+</figure>
+
+### 4. Configurar `/etc/hosts` con el nombre de dominio
+```
+sudo nano /etc/hosts
+```
+Poner al final:
+```
+127.0.0.1 practica4.dam
+```
+
+### 5. Entrar al reverse proxy desde el navegador
+```
+http://localhost:84
+```
+Los datos de acceso son:
+```
+Usuario: admin@dam.ies 
+Contraseña: admin123
+```
+
+### 6. Establecer configuración general como
+```
+location = /_flask_auth_admin {
+    internal;
+    proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+    proxy_set_header X-Required-Roles "admin";
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+location = /_flask_auth_empleado {
+    internal;
+    proxy_pass http://practica4-flaskapp-1:8888/auth/verify;
+    proxy_pass_request_body off;
+    proxy_set_header Content-Length "";
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+    proxy_set_header X-Required-Roles "empleado";
+    proxy_set_header X-Original-URI $request_uri;
+    proxy_set_header X-Original-Host $host;
+    proxy_set_header X-Original-Method $request_method;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+}
+
+```
+
+### 7. Configurar el dominio practica4.dam para que redirija al contenedor de java.
+En caso de no configurar nada, al entrar a la página web aparecerá:
+
+<figure>
+  <img src="/redes/img/nginxcongra.png" alt="nginx" width="300" />
+  <br/>
+</figure>
+
+Una vez configurado bien debe aparecer:
+<figure>
+  <img src="/redes/img/index_jsp.png" alt="indexjps" width="600" />
+  <br/>
+</figure>
+
+### 8. Las rutas protegidas (en custom locations) deberán tener esta configuración :
+Proteger admin:
+```
+auth_request /_flask_auth_admin;
+
+auth_request_set $auth_user_id $upstream_http_x_user_id;
+auth_request_set $auth_username $upstream_http_x_username;
+auth_request_set $auth_role $upstream_http_x_role;
+
+error_page 401 =302 /login?next=$uri;
+error_page 403 =403 /403;
+
+proxy_set_header X-User-Id $auth_user_id;
+proxy_set_header X-Username $auth_username;
+proxy_set_header X-Role $auth_role;
+```
+
+Proteger empleado:
+```
+auth_request /_flask_auth_empleado;
+
+auth_request_set $auth_user_id $upstream_http_x_user_id;
+auth_request_set $auth_username $upstream_http_x_username;
+auth_request_set $auth_role $upstream_http_x_role;
+
+error_page 401 =302 /login?next=$uri;
+error_page 403 =403 /403;
+
+proxy_set_header X-User-Id $auth_user_id;
+proxy_set_header X-Username $auth_username;
+proxy_set_header X-Role $auth_role;
+```
+
+### Video resultado final
+<ReactPlayer playing={false} controls url='https://youtu.be/uLTE4YKxjQs' />
+
+## 9. Entrega
+
+Explicar en persona el funcionamiento de la práctica.
+
+### FECHA 
+
+---
+
+
+## 10. Consejos
+
+El objetivo no es modificar profundamente el código de las aplicaciones, sino comprender cómo un reverse proxy puede unificar varios servicios bajo un mismo dominio.
+
+Un error habitual será que la página cargue pero aparezca sin estilos. En ese caso, se deberá revisar qué servicio está recibiendo las peticiones a rutas como:
+
+```text
+/CSS
+/static
+```
+
+Otro error habitual será proteger accidentalmente `/login` o `/403`. Estas rutas deben quedar accesibles sin autenticación, ya que son necesarias para iniciar sesión o mostrar errores de permisos.
