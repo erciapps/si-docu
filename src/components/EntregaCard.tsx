@@ -7,7 +7,7 @@ export default function EntregaCard({
   date,
   time,
   link,
-  imageSrc = "https://educamosclm.castillalamancha.es/portal/sites/default/files/LogoEducamos_206x30.jpg",
+  imageSrc = "https://cerbero.jccm.es/auth/resources/1s08v/login/jccm-educacion_v2/img/educamosclm.svg",
 }) {
   return (
     <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden dark:bg-gray-800 text-center border border-gray-200">
