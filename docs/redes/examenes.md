@@ -6,14 +6,14 @@ import ReactPlayer from 'react-player'
 # EXAMENES
 
 ## SOLUCIÓN EXAMEN 1ª ORDINARIA REDES UT5 2026
+
 <figure>
-  <img src="/redes/img/red_1_2026.png" alt="redes2026_1" width="400" />
+  <img src="/redes/img/red1ordi1.png" alt="red1ordi1" width="400" />
 </figure>
 
 <figure>
-  <img src="/redes/img/red_2_2026.png" alt="redes2026_2" width="400" />
+  <img src="/redes/img/red1ordi2.png" alt="red1ordi1" width="400" />
 </figure>
-
 
 <ReactPlayer playing={false} controls url='https://youtu.be/MLVTYtsvy7M' />
 <ReactPlayer playing={false} controls url='https://youtu.be/pQgI5FCW4uc' />
@@ -21,11 +21,11 @@ import ReactPlayer from 'react-player'
 
 ## SOLUCIÓN EXAMEN PARCIAL REDES UT5 2026
 <figure>
-  <img src="/redes/img/red1ordi1.png" alt="red1ordi1" width="400" />
+  <img src="/redes/img/red_1_2026.png" alt="redes2026_1" width="400" />
 </figure>
 
 <figure>
-  <img src="/redes/img/red1ordi2.png" alt="red1ordi1" width="400" />
+  <img src="/redes/img/red_2_2026.png" alt="redes2026_2" width="400" />
 </figure>
 
 
