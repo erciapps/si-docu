@@ -4,14 +4,15 @@ import './home.css';
 
 const unidades = [
   {
-    id: 'UD1',
-    icon: '>_',
-    title: 'Introducción al entorno Linux',
-    description: 'Terminal, comandos básicos y gestión de paquetes.',
-    ra: ['RA4', 'RA7'],
-    path: '/docs/category/linux',
-    available: true,
-  },
+  id: 'UD1',
+  icon: '>_',
+  title: 'Introducción al entorno Linux',
+  description: 'Terminal, comandos básicos y gestión de paquetes.',
+  ra: ['RA4', 'RA7'],
+  path: '/docs/category/linux',
+  certificatePath: '/docs/certificado',
+  available: true,
+},
   {
     id: 'UD2',
     icon: '$',
@@ -158,15 +159,28 @@ export default function Home() {
                     </div>
 
                     {unidad.available ? (
-                      <Link className="unit-action" to={unidad.path}>
-                        Acceder
-                        <span>→</span>
-                      </Link>
-                    ) : (
-                      <span className="unit-locked">
-                        Próximamente
-                      </span>
-                    )}
+  <div className="unit-actions">
+    <Link className="unit-action" to={unidad.path}>
+      Acceder
+      <span>→</span>
+    </Link>
+
+        {unidad.certificatePath && (
+          <Link
+            className="unit-certificate"
+            to={unidad.certificatePath}
+          >
+              Certificado CA
+          </Link>
+        )}
+      </div>
+    ) : (
+      <span className="unit-locked">
+        Próximamente
+      </span>
+    )}
+
+                    
                   </div>
                 </article>
               ))}
