@@ -1,264 +1,185 @@
-
 import Layout from '@theme/Layout';
-import ModalCardUsuarios from '@site/src/components/ModalUsuarios';
+import Link from '@docusaurus/Link';
+import './home.css';
 
-import { useEffect } from 'react';
+const unidades = [
+  {
+    id: 'UD1',
+    icon: '>_',
+    title: 'Introducción al entorno Linux',
+    description: 'Terminal, comandos básicos y gestión de paquetes.',
+    ra: ['RA4', 'RA7'],
+    path: '/docs/category/linux',
+    available: true,
+  },
+  {
+    id: 'UD2',
+    icon: '$',
+    title: 'Usuarios, permisos y procesos',
+    description: 'Usuarios, permisos, procesos, servicios, logs y scripts básicos.',
+    ra: ['RA4'],
+  },
+  {
+    id: 'UD3',
+    icon: '↔',
+    title: 'Redes TCP/IP y conectividad',
+    description: 'Redes TCP/IP, conectividad, SSH y puertos.',
+    ra: ['RA5'],
+  },
+  {
+    id: 'UD4',
+    icon: '▣',
+    title: 'Docker y Docker Compose',
+    description: 'Despliegue de servicios y microservicios sencillos.',
+    ra: ['RA4', 'RA5', 'RA6'],
+  },
+  {
+    id: 'UD5',
+    icon: 'VM',
+    title: 'Virtualización e instalación',
+    description: 'Virtualización e instalación de sistemas operativos.',
+    ra: ['RA2'],
+  },
+  {
+    id: 'UD6',
+    icon: 'HW',
+    title: 'Hardware y diagnóstico',
+    description: 'Componentes hardware, periféricos, redes físicas, diagnóstico y benchmark.',
+    ra: ['RA1'],
+  },
+  {
+    id: 'UD7',
+    icon: 'FS',
+    title: 'Gestión de la información',
+    description: 'Sistemas de archivos, particiones, copias y recuperación.',
+    ra: ['RA3'],
+  },
+  {
+    id: 'UD8',
+    icon: 'DOC',
+    title: 'Documentación técnica',
+    description: 'Documentación técnica y aplicaciones informáticas de propósito general.',
+    ra: ['RA7'],
+  },
+];
 
 export default function Home() {
-  useEffect(() => {
-  const cards = document.querySelectorAll('.lift-card');
-  const HOVER_LIFT = 24;
-  const SCALE = 1.03;
-
-  const resetCard = (card) => {
-    card.style.setProperty('--rx', '0deg');
-    card.style.setProperty('--ry', '0deg');
-    card.style.setProperty('--tx', '0px');
-    card.style.setProperty('--ty', '0px');
-    card.style.setProperty('--lift', '0px');
-    card.style.setProperty('--scale', 1);
-    const glow = card.querySelector('.glow');
-    if (glow) glow.style.opacity = 0;
-  };
-
-  cards.forEach((card) => {
-    const glow = card.querySelector('.glow');
-
-    const onEnter = () => {
-      card.style.setProperty('--lift', HOVER_LIFT + 'px');
-      card.style.setProperty('--scale', SCALE);
-      if (glow) glow.style.opacity = 0.4;
-    };
-
-    const onLeave = () => resetCard(card);
-
-    // ❌ sin mousemove
-    card.addEventListener('mouseenter', onEnter);
-    card.addEventListener('mouseleave', onLeave);
-
-    resetCard(card);
-  });
-
-  return () => {
-    cards.forEach((card) => {
-      card.replaceWith(card.cloneNode(true));
-    });
-  };
-}, []);
-
-
-
   return (
     <Layout
       title="Sistemas Informáticos"
-      description="Portal principal del recurso de Sistemas Informáticos">
-      <div style={{
-        minHeight: '100vh',
-        color: '#e2e8f0',
-        background: `
-          radial-gradient(1200px 800px at 15% -10%, #7a3e22 0%, rgba(122,62,34,0) 60%),
-          linear-gradient(180deg, #1a0e0a, #2c140a 60%, #1a0e0a 100%)
-        `
-      }}>
-        {/* HERO */}
-        <header style={{
-          maxWidth: 1100, margin: '48px auto 8px', padding: '0 16px'
-        }}>
-          <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(28px,3vw,40px)', letterSpacing: '.3px' }}>
-            🖥️ Sistemas Informáticos
-          </h1>
-          <p style={{ margin: 0, color: '#fdba74' }}>
-            Documentación, guías y prácticas del módulo.
-          </p>
+      description="Documentación del módulo de Sistemas Informáticos"
+    >
+      <main className="erci-home">
+        <div className="erci-shell">
 
-          {/* <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 16 }}>
-            <a href="/docs/intro" style={btnPrimary}>Entrar al temario →</a>
-            <a href="/blog" style={btnGhost}>Novedades del módulo</a>
-          </div> */}
-        </header>
-
-        {/* GRID DE TARJETAS */}
-        <section style={{
-          maxWidth: 1100, margin: '28px auto 64px', padding: '0 16px',
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20,
-          perspective: '1000px'
-        }}>
-          {/* HARWARE */}
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT1</span>
-            <h3 style={title}>Hardware</h3>
-            <p style={desc}>
-              Componentes hardware princiaples de un ordenador: CPU, GPU, RAM, Placa base, periféricos, ...
-            </p>
-            <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/hardware" style={btn('#fb8c00')}>
-                IR <span style={arrow}>→</span>
-              </a>
+          <header className="erci-header">
+            <div className="erci-brand">
+              <div className="erci-logo">E</div>
+              <div>
+                <strong>ErciApps</strong>
+                <span>Aula digital</span>
+              </div>
             </div>
-          </article>
 
-          {/* SISTEMAS OPERATIVOS */}
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT2</span>
-            <h3 style={title}>Sistemas operativos</h3>
-            <p style={desc}>
-              Instalación y funcionamiento de sistemas operativos. Copias de seguridad y restauración
-            </p>
-            <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/sistemas-operativos" style={btn('#fb8c00')}>
-                IR <span style={arrow}>→</span>
-              </a>
+            <div className="erci-course">
+              CFGS · Desarrollo de aplicaciones multiplataforma
             </div>
-          </article>
+          </header>
 
-          {/* LINUX BASH */}
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT3</span>
-            <h3 style={title}>Linux</h3>
-            <p style={desc}>
-              Manejo del sistema operativo por linea de comandos - Bash
-            </p>
-            <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/linux" style={btn('#fb8c00')}>
-                IR <span style={arrow}>→</span>
-              </a>
+          <section className="erci-hero">
+            <div className="erci-kicker">
+              <span></span>
+              CURSO 2026 - 2027
             </div>
-          </article>
 
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT4</span>
-            <h3 style={title}>Servicios, procesos y tareas</h3>
-            <p style={desc}>
-              Programación de servicios, procesos y tareas con Bash - Python
+            <h1>
+              Sistemas
+              <br />
+              <em>Informáticos</em>
+            </h1>
+
+            <p>
+              Un recorrido práctico por los sistemas operativos, las redes,
+              la virtualización, Docker y la administración de recursos
+              informáticos.
             </p>
-            <div style={{ textAlign: 'center' }}>
-              <a href="/docs/category/servicios-y-procesos" style={btn('#fb8c00')}>
-                IR <span style={arrow}></span>
-              </a>
+
+            <div className="erci-summary">
+              <div>
+                <strong>08</strong>
+                <span>Unidades didácticas</span>
+              </div>
+              <div>
+                <strong>07</strong>
+                <span>Resultados de aprendizaje</span>
+              </div>
+              <div>
+                <strong>01</strong>
+                <span>Unidad disponible</span>
+              </div>
             </div>
-          </article> 
+          </section>
 
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>UT5</span>
-            <h3 style={title}>Redes</h3>
-            <p style={desc}>
-              Sistemas informáticos en red. Configuración, explotación y gestión de recursos
-            </p>
-            <div style={{ textAlign: 'center' }}>
-              <a href="/docs/redes/intro" style={btn('#fb8c00')}>
-                IR <span style={arrow}></span>
-              </a>
+          <section className="units-section">
+            <div className="section-heading">
+              <div>
+                <span className="section-label">CONTENIDOS DEL MÓDULO</span>
+                <h2>Unidades didácticas</h2>
+              </div>
+
+              <span className="section-line"></span>
             </div>
-          </article> 
 
-  
-          <article className="lift-card" style={cardStyle('#4a2500', '#e65100', '#fb8c00')}>
-            <div className="glow" style={glowStyle}></div>
-            <span style={pill('#fdba74')}>Certificados</span>
-            <h3 style={title}>Certificado CA</h3>
-            <p style={desc}>
-              Instrucciones para instalar certificado raiz para servicios Erciapps
-            </p>
-            <div style={{ textAlign: 'center' }}>
-              <a href="/docs/certificado" style={btn('#fb8c00')}>
-                IR <span style={arrow}></span>
-              </a>
+            <div className="units-grid">
+              {unidades.map((unidad, index) => (
+                <article
+                  key={unidad.id}
+                  className={`unit-card ${
+                    unidad.available ? 'is-available featured' : 'is-pending'
+                  }`}
+                >
+                  <div className="unit-top">
+                    <span className="unit-number">{unidad.id}</span>
+                    <span className="unit-status">
+                      {unidad.available ? 'Disponible' : 'En preparación'}
+                    </span>
+                  </div>
+
+                  <div className="unit-icon">{unidad.icon}</div>
+
+                  <h3>{unidad.title}</h3>
+                  <p>{unidad.description}</p>
+
+                  <div className="unit-footer">
+                    <div className="ra-list">
+                      {unidad.ra.map((ra) => (
+                        <span key={ra}>{ra}</span>
+                      ))}
+                    </div>
+
+                    {unidad.available ? (
+                      <Link className="unit-action" to={unidad.path}>
+                        Acceder
+                        <span>→</span>
+                      </Link>
+                    ) : (
+                      <span className="unit-locked">
+                        Próximamente
+                      </span>
+                    )}
+                  </div>
+                </article>
+              ))}
             </div>
-          </article> 
+          </section>
 
-
-
-<div className="cards-grid">
-  <ModalCardUsuarios />
-</div>
-          
-
-
-        </section>
-
-        {/* CTA final 
-
-        <section style={{ maxWidth: 1100, margin: '0 auto 56px', padding: '0 16px' }}>
-          <div style={{
-            borderRadius: 18, padding: 20,
-            background: 'linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.03))',
-            border: '1px solid rgba(255,255,255,.08)'
-          }}>
-            <h3 style={{ margin: '0 0 8px' }}>¿Listo para empezar?</h3>
-            <p style={{ margin: '0 0 14px', color: 'rgba(226,232,240,.85)' }}>
-              Ve directo al índice o consulta recursos adicionales.
-            </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a href="/docs/intro" style={btnPrimary}>Bienvenida →</a>
-              <a href="https://erciapps.sytes.net" style={btnGhost}>Volver a ErciApps</a>
-            </div>
-          </div>
-        </section>*/}
-      </div>
+          <footer className="erci-footer">
+            <span>ERCI Apps</span>
+            <span>·</span>
+            <span>Sistemas Informáticos</span>
+          </footer>
+        </div>
+      </main>
     </Layout>
   );
-}
-
-/* ====== estilos reutilizables ====== */
-const title = { fontSize: 20, fontWeight: 800, margin: '6px 0 6px' };
-const desc = { margin: '0 0 14px', color: 'rgba(255,255,255,.9)', minHeight: 42 };
-const arrow = { transition: 'transform .18s' };
-
-const btnPrimary = {
-  display: 'inline-flex', alignItems: 'center', gap: 8,
-  textDecoration: 'none', color: '#0b1220', background: '#fb8c00',
-  padding: '10px 14px', borderRadius: 12, fontWeight: 800,
-  boxShadow: '0 6px 14px rgba(251,140,0,.35)'
-};
-const btnGhost = {
-  display: 'inline-flex', alignItems: 'center', gap: 8,
-  textDecoration: 'none', color: '#e2e8f0', background: 'transparent',
-  padding: '10px 14px', borderRadius: 12, fontWeight: 700,
-  border: '1px solid rgba(255,255,255,.18)'
-};
-
-function btn(color) {
-  return {
-    display: 'inline-flex', alignItems: 'center', gap: 8,
-    textDecoration: 'none', color: '#0b1220', background: color,
-    padding: '10px 14px', borderRadius: 12, fontWeight: 800,
-    boxShadow: `0 6px 14px ${hexToRgba(color, .45)}`
-  };
-}
-
-function pill(bg) {
-  return {
-    display: 'inline-block', fontSize: 12, fontWeight: 700, color: '#0b1220',
-    background: bg, padding: '4px 9px', borderRadius: 999, marginBottom: 10
-  };
-}
-
-function cardStyle(from, to) {
-  return {
-    '--rx': '0deg', '--ry': '0deg', '--tx': '0px', '--ty': '0px', '--lift': '0px', '--scale': '1',
-    position: 'relative', overflow: 'hidden', borderRadius: 18, padding: 20, color: '#fff',
-    border: '1px solid rgba(255,255,255,.08)',
-    background: `linear-gradient(135deg, ${from}, ${to})`,
-    transform: `translate3d(0, calc(-1 * var(--lift)), 0)
-               translate3d(var(--tx), var(--ty), 0)
-               rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--scale))`,
-    transition: 'transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease',
-    willChange: 'transform'
-  };
-}
-
-const glowStyle = {
-  position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0, transition: 'opacity .2s ease'
-};
-
-function hexToRgba(hex, a) {
-  const n = hex.replace('#', '');
-  const bigint = parseInt(n.length === 3 ? n.split('').map(c => c + c).join('') : n, 16);
-  const r = (bigint >> 16) & 255, g = (bigint >> 8) & 255, b = bigint & 255;
-  return `rgba(${r},${g},${b},${a})`;
 }
